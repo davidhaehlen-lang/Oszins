@@ -1,0 +1,302 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #101827;
+    color: white;
+    text-align: center;
+}
+
+header {
+    background: #172c49;
+    padding: 25px;
+    border-bottom: 4px solid #f2c94c;
+}
+
+.logo {
+    width: 75px;
+    height: 75px;
+    background: #f2c94c;
+    color: #172c49;
+    border-radius: 15px;
+    margin: auto auto 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+.logo small {
+    font-size: 13px;
+}
+
+header h1 {
+    font-size: 38px;
+    color: #f2c94c;
+}
+
+header p {
+    margin-top: 8px;
+    color: #ddd;
+}
+
+main {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+.clicker,
+.shop,
+.stats,
+.test-section,
+.rebirth-section {
+    background: #1c2b40;
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px #0005;
+}
+
+h2 {
+    color: #f2c94c;
+    margin-bottom: 15px;
+}
+
+#iq {
+    font-size: 45px;
+    font-weight: bold;
+    color: #f2c94c;
+    margin: 15px;
+}
+
+#perSecond,
+#clickPower {
+    color: #b8c7d9;
+    margin: 10px;
+}
+
+#clickButton {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 5px solid #f2c94c;
+    background: #263e5c;
+    font-size: 80px;
+    cursor: pointer;
+    transition: 0.15s;
+    margin: 20px;
+}
+
+#clickButton:hover {
+    transform: scale(1.08);
+    background: #355477;
+}
+
+#clickButton:active {
+    transform: scale(0.93);
+}
+
+.rebirth-info {
+    margin-top: 20px;
+    color: #b8c7d9;
+    line-height: 1.8;
+}
+
+/* Schulprüfungen */
+
+.test-section {
+    border: 2px solid #477fc0;
+}
+
+#testTimer {
+    color: #b8c7d9;
+    margin: 12px;
+}
+
+.quiz {
+    background: #263e5c;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+.quiz h3 {
+    margin: 15px 0;
+    font-size: 21px;
+}
+
+.difficulty {
+    display: inline-block;
+    background: #f2c94c;
+    color: #172c49;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+#questionTimer {
+    color: #ffcc66;
+    margin-bottom: 15px;
+}
+
+#answers {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+#answers button {
+    background: #f2c94c;
+    color: #172c49;
+    border: none;
+    padding: 13px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+#answers button:hover:not(:disabled) {
+    background: #ffe17b;
+    transform: scale(1.02);
+}
+
+#answers button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#quizResult {
+    margin-top: 15px;
+    font-weight: bold;
+    line-height: 1.5;
+}
+
+/* Shops */
+
+.teacher-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.teacher {
+    background: #263e5c;
+    border: 2px solid #3c5675;
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.teacher h3 {
+    color: #f2c94c;
+    margin-bottom: 12px;
+}
+
+.teacher p {
+    margin: 9px;
+    font-size: 14px;
+}
+
+.teacher button {
+    background: #f2c94c;
+    color: #172c49;
+    padding: 11px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.teacher button:hover:not(:disabled) {
+    background: #ffe17b;
+}
+
+.teacher button:disabled {
+    background: #777;
+    color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Rebirth */
+
+.rebirth-section {
+    border: 2px solid #a56be0;
+}
+
+.rebirth-card {
+    background: #30264c;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 15px;
+    line-height: 2;
+}
+
+#rebirthButton {
+    background: linear-gradient(135deg, #a56be0, #6240ad);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 16px 35px;
+    border: none;
+    border-radius: 10px;
+    margin: 15px;
+    cursor: pointer;
+}
+
+#rebirthButton:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+#rebirthButton:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+/* Statistiken */
+
+.stats p {
+    margin: 12px;
+}
+
+#resetButton {
+    background: #d9534f;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+footer {
+    background: #172c49;
+    padding: 20px;
+    color: #aaa;
+    margin-top: 40px;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 28px;
+    }
+
+    #clickButton {
+        width: 130px;
+        height: 130px;
+        font-size: 65px;
+    }
+
+    #answers {
+        grid-template-columns: 1fr;
+    }
+}

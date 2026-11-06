@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSZINS CLICKER</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="main.js" defer></script>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <span>OSZ</span>
+        <small>INS</small>
+    </div>
+
+    <h1>OSZINS CLICKER</h1>
+    <p>Werde zum grössten IQ-Genie der Schule!</p>
+</header>
+
+<main>
+
+    <section class="clicker">
+        <h2>🧠 Dein IQ</h2>
+
+        <div id="iq">0 IQ</div>
+        <p id="perSecond">0 IQ pro Sekunde</p>
+
+        <button id="clickButton">🧠</button>
+
+        <p>Klicke auf das Gehirn!</p>
+        <p id="clickPower">1 IQ pro Klick</p>
+
+        <div class="rebirth-info">
+            <p>Rebirths: <span id="rebirths">0</span></p>
+            <p>Multiplikator: <span id="multiplier">x1</span></p>
+        </div>
+    </section>
+
+    <section class="test-section">
+        <h2>📝 Schulprüfungen</h2>
+
+        <p id="testTimer">
+            Nächster Test in 60 Sekunden
+        </p>
+
+        <div id="quiz" class="quiz" hidden>
+            <span id="difficulty" class="difficulty"></span>
+
+            <h3 id="question">Frage</h3>
+
+            <p id="questionTimer">20 Sekunden</p>
+
+            <div id="answers"></div>
+
+            <p id="quizResult"></p>
+        </div>
+    </section>
+
+    <section class="shop">
+        <h2>🧑‍🏫 Lehrpersonen-Shop</h2>
+        <p>Lehrpersonen produzieren automatisch IQ.</p>
+
+        <div id="teacherShop" class="teacher-list"></div>
+    </section>
+
+    <section class="shop">
+        <h2>🎒 Schulmaterial-Upgrades</h2>
+        <p>Verbessere deine Klicks mit Schulsachen!</p>
+
+        <div id="upgradeShop" class="teacher-list"></div>
+    </section>
+
+    <section class="rebirth-section">
+        <h2>♻️ Rebirth-System</h2>
+
+        <p>Starte von vorne und werde dauerhaft stärker!</p>
+
+        <div class="rebirth-card">
+
+            <p>Deine Rebirths:
+                <strong id="rebirthCount">0</strong>
+            </p>
+
+            <p>Multiplikator:
+                <strong id="rebirthBonus">x1</strong>
+            </p>
+
+            <p>Benötigter IQ:
+                <strong id="rebirthCost">1'000'000</strong>
+            </p>
+
+            <button id="rebirthButton">
+                REBIRTH
+            </button>
+
+            <p id="rebirthMessage">
+                Sammle genügend IQ!
+            </p>
+        </div>
+    </section>
+
+    <section class="stats">
+        <h2>📊 Statistiken</h2>
+
+        <p>Gesamter IQ: <span id="totalIQ">0</span></p>
+        <p>Gekaufte Lehrpersonen: <span id="totalTeachers">0</span></p>
+        <p>Gekaufte Upgrades: <span id="totalUpgrades">0</span></p>
+
+        <button id="resetButton">
+            Spiel zurücksetzen
+        </button>
+    </section>
+
+</main>
+
+<footer>
+    OSZINS CLICKER | Viel Erfolg beim Lernen!
+</footer>
+
+</body>
+</html>
