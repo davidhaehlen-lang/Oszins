@@ -1,15 +1,41 @@
+// =============================
+// OSZINS CLICKER VERSION 4.0
+// =============================
+
+const SAVE_KEY = "oszinsSave";
 
 let iq = 0;
 let totalIQ = 0;
 let clickPower = 1;
 let iqPerSecond = 0;
 let rebirths = 0;
+let leaves = 0;
 
-const SAVE_KEY = "oszinsSave";
+let goldenReady = false;
+let goldenActiveUntil = 0;
+let nextGoldenTime = Date.now() + 2 * 60 * 1000;
 
-// ==============================
-// LEHRPERSONEN
-// ==============================
+let bossActive = false;
+let bossQuestionIndex = 0;
+let bossCorrect = 0;
+let bossQuestions = [];
+let nextBossTime = Date.now() + 30 * 60 * 1000;
+
+let leafEventActive = false;
+let leavesSpawned = 0;
+let leafEventEnd = 0;
+let nextLeafTime = Date.now() + 60 * 60 * 1000;
+let leafSpawnTimer = 0;
+
+let testActive = false;
+let testTimeLeft = 20;
+let testCountdown = 60;
+let currentQuestion = null;
+let questionNumber = 0;
+
+// =============================
+// LEHRER
+// =============================
 
 const teachers = [
     { name: "Herr Fuhrer", cost: 5000, boost: 5, owned: 0 },
@@ -30,11 +56,9 @@ const teachers = [
     { name: "Frau Dappen", cost: 4500000000, boost: 1200000, owned: 0 }
 ];
 
-const teacherBaseCosts = teachers.map(t => t.cost);
-
-// ==============================
-// SCHULMATERIAL
-// ==============================
+// =============================
+// NORMALE UPGRADES
+// =============================
 
 const upgrades = [
     { name: "Bleistift", icon: "✏️", cost: 2500, bonus: 5, owned: 0 },
@@ -49,46 +73,77 @@ const upgrades = [
     { name: "Schulserver", icon: "🖧", cost: 50000000, bonus: 50000, owned: 0 }
 ];
 
-const upgradeBaseCosts = upgrades.map(u => u.cost);
+// =============================
+// LIMITIERTE BLATT-UPGRADES
+// =============================
 
-// ==============================
-// REBIRTH
-// ==============================
+const limitedUpgrades = [
+    { name: "Goldenes Blatt", cost: 50, bonus: 100, bought: false },
+    { name: "Herbst-Heft", cost: 100, bonus: 250, bought: false },
+    { name: "Blätter-Rucksack", cost: 150, bonus: 500, bought: false },
+    { name: "Goldener Taschenrechner", cost: 200, bonus: 1000, bought: false },
+    { name: "Herbst-Gaming-PC", cost: 250, bonus: 2500, bought: false }
+];
 
-// Jeder Rebirth verdoppelt den Multiplikator.
+// =============================
+// SCHULTEST-FRAGEN
+// =============================
+
+const questions = [
+    { q: "Wie viele Minuten hat eine Stunde?", a: ["30", "60", "90", "100"], c: 1, level: 1 },
+    { q: "Was ist 12 x 8?", a: ["86", "92", "96", "108"], c: 2, level: 1 },
+    { q: "Wie heisst die Hauptstadt der Schweiz?", a: ["Zürich", "Genf", "Bern", "Basel"], c: 2, level: 1 },
+    { q: "Wie viele Seiten hat ein Würfel?", a: ["4", "6", "8", "12"], c: 1, level: 1 },
+    { q: "Was ist 15 x 7?", a: ["95", "100", "105", "115"], c: 2, level: 2 },
+    { q: "Wie heisst die Hauptstadt von Frankreich?", a: ["Rom", "Paris", "Madrid", "Berlin"], c: 1, level: 2 },
+    { q: "Wie viele Kontinente gibt es?", a: ["5", "6", "7", "8"], c: 2, level: 2 },
+    { q: "Was ist die Quadratwurzel von 144?", a: ["10", "11", "12", "14"], c: 2, level: 2 },
+    { q: "Welcher Planet ist der Sonne am nächsten?", a: ["Venus", "Mars", "Merkur", "Jupiter"], c: 2, level: 3 },
+    { q: "Was ist 25 x 16?", a: ["300", "350", "400", "450"], c: 2, level: 3 },
+    { q: "Wie viele Grad hat ein rechter Winkel?", a: ["45", "90", "180", "360"], c: 1, level: 3 },
+    { q: "Welches Gas brauchen Menschen zum Atmen?", a: ["Stickstoff", "Sauerstoff", "Helium", "Wasserstoff"], c: 1, level: 3 }
+];
+
+// =============================
+// BOSSFRAGEN
+// =============================
+
+const bossQuestionPool = [
+    { q: "Was ist 125 x 8?", a: ["900", "1000", "1100", "1200"], c: 1 },
+    { q: "Wie viele Bundesstaaten haben die USA?", a: ["48", "49", "50", "52"], c: 2 },
+    { q: "Was ist die Hauptstadt von Japan?", a: ["Seoul", "Peking", "Tokio", "Bangkok"], c: 2 },
+    { q: "Was ist 17 x 17?", a: ["279", "289", "299", "309"], c: 1 },
+    { q: "Wie viele Knochen hat ein erwachsener Mensch ungefähr?", a: ["106", "206", "306", "406"], c: 1 },
+    { q: "Welcher Planet ist der grösste?", a: ["Erde", "Saturn", "Jupiter", "Neptun"], c: 2 },
+    { q: "Was ist 144 geteilt durch 12?", a: ["10", "11", "12", "14"], c: 2 },
+    { q: "Wie viele Minuten hat ein Tag?", a: ["1240", "1340", "1440", "1540"], c: 2 }
+];
+
+// =============================
+// HILFSFUNKTIONEN
+// =============================
+
+function formatNumber(number) {
+    return Math.floor(number).toLocaleString("de-CH");
+}
+
 function getMultiplier() {
     return Math.pow(2, rebirths);
 }
 
-// Der erste Rebirth kostet 1 Million IQ.
-// Jeder weitere kostet dreimal so viel.
+function getGoldenMultiplier() {
+    return Date.now() < goldenActiveUntil ? 7 : 1;
+}
+
 function getRebirthCost() {
     return 1000000 * Math.pow(3, rebirths);
 }
 
-// ==============================
-// PREISE
-// ==============================
-
-function updateCosts() {
-    teachers.forEach((teacher, index) => {
-        teacher.cost = Math.floor(
-            teacherBaseCosts[index] *
-            Math.pow(1.65, teacher.owned)
-        );
-    });
-
-    upgrades.forEach((upgrade, index) => {
-        upgrade.cost = Math.floor(
-            upgradeBaseCosts[index] *
-            Math.pow(1.9, upgrade.owned)
-        );
-    });
+function addIQ(amount) {
+    iq += amount;
+    totalIQ += amount;
+    updateGame();
 }
-
-// ==============================
-// BOOSTS BERECHNEN
-// ==============================
 
 function calculateBoosts() {
     let teacherBoost = 0;
@@ -102,681 +157,624 @@ function calculateBoosts() {
         upgradeBoost += upgrade.owned * upgrade.bonus;
     });
 
+    limitedUpgrades.forEach(upgrade => {
+        if (upgrade.bought) {
+            upgradeBoost += upgrade.bonus;
+        }
+    });
+
     const multiplier = getMultiplier();
 
     iqPerSecond = teacherBoost * multiplier;
     clickPower = (1 + upgradeBoost) * multiplier;
 }
 
-// ==============================
-// ZAHLEN FORMATIEREN
-// ==============================
-
-function formatNumber(number) {
-    return Math.floor(number).toLocaleString("de-CH");
-}
-
-// ==============================
-// SPEICHERN
-// ==============================
-
-function saveGame() {
-    const data = {
-        iq: iq,
-        totalIQ: totalIQ,
-        rebirths: rebirths,
-        teachers: teachers.map(t => t.owned),
-        upgrades: upgrades.map(u => u.owned)
-    };
-
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-}
-
-// ==============================
-// LADEN
-// ==============================
-
-function loadGame() {
-    try {
-        const saved = localStorage.getItem(SAVE_KEY);
-
-        if (saved) {
-            const data = JSON.parse(saved);
-
-            iq = Math.max(0, Number(data.iq) || 0);
-            totalIQ = Math.max(0, Number(data.totalIQ) || 0);
-            rebirths = Math.max(0, Math.floor(Number(data.rebirths) || 0));
-
-            teachers.forEach((teacher, index) => {
-                teacher.owned = Math.max(
-                    0,
-                    Math.floor(Number(data.teachers?.[index]) || 0)
-                );
-            });
-
-            upgrades.forEach((upgrade, index) => {
-                upgrade.owned = Math.max(
-                    0,
-                    Math.floor(Number(data.upgrades?.[index]) || 0)
-                );
-            });
-        }
-    } catch (error) {
-        console.error("Fehler beim Laden:", error);
-    }
-
-    updateCosts();
-    calculateBoosts();
-    updateGame();
-}
-
-// ==============================
-// KLICKEN
-// ==============================
-
-document.getElementById("clickButton").addEventListener("click", function() {
-    iq += clickPower;
-    totalIQ += clickPower;
-
-    updateGame();
-});
-
-// ==============================
-// LEHRPERSONEN SHOP
-// ==============================
-
-function createTeacherShop() {
-    const shop = document.getElementById("teacherShop");
-
-    teachers.forEach((teacher, index) => {
-        const card = document.createElement("div");
-        card.className = "teacher";
-
-        const heading = document.createElement("h3");
-        heading.textContent = teacher.name;
-
-        const boost = document.createElement("p");
-        boost.textContent = "+" + formatNumber(teacher.boost) + " IQ / Sekunde";
-
-        const owned = document.createElement("p");
-        owned.innerHTML = `Besitzt: <span id="teacherOwned${index}">0</span>`;
-
-        const cost = document.createElement("p");
-        cost.innerHTML = `Preis: <span id="teacherCost${index}">0</span> IQ`;
-
-        const button = document.createElement("button");
-        button.id = `buyTeacher${index}`;
-        button.textContent = "Lehrperson kaufen";
-
-        button.addEventListener("click", () => buyTeacher(index));
-
-        card.append(heading, boost, owned, cost, button);
-        shop.appendChild(card);
-    });
-}
-
-function buyTeacher(index) {
-    const teacher = teachers[index];
-
-    if (iq >= teacher.cost) {
-        iq -= teacher.cost;
-        teacher.owned++;
-
-        updateCosts();
-        calculateBoosts();
-        updateGame();
-        saveGame();
-    }
-}
-
-// ==============================
-// UPGRADE SHOP
-// ==============================
-
-function createUpgradeShop() {
-    const shop = document.getElementById("upgradeShop");
-
-    upgrades.forEach((upgrade, index) => {
-        const card = document.createElement("div");
-        card.className = "teacher";
-
-        const heading = document.createElement("h3");
-        heading.textContent = upgrade.icon + " " + upgrade.name;
-
-        const boost = document.createElement("p");
-        boost.textContent = "+" + formatNumber(upgrade.bonus) + " Klick-IQ";
-
-        const owned = document.createElement("p");
-        owned.innerHTML = `Besitzt: <span id="upgradeOwned${index}">0</span>`;
-
-        const cost = document.createElement("p");
-        cost.innerHTML = `Preis: <span id="upgradeCost${index}">0</span> IQ`;
-
-        const button = document.createElement("button");
-        button.id = `buyUpgrade${index}`;
-        button.textContent = "Upgrade kaufen";
-
-        button.addEventListener("click", () => buyUpgrade(index));
-
-        card.append(heading, boost, owned, cost, button);
-        shop.appendChild(card);
-    });
-}
-
-function buyUpgrade(index) {
-    const upgrade = upgrades[index];
-
-    if (iq >= upgrade.cost) {
-        iq -= upgrade.cost;
-        upgrade.owned++;
-
-        updateCosts();
-        calculateBoosts();
-        updateGame();
-        saveGame();
-    }
-}
-
-// ==============================
-// ANZEIGE AKTUALISIEREN
-// ==============================
-
 function updateGame() {
-    document.getElementById("iq").textContent =
-        formatNumber(iq) + " IQ";
+    calculateBoosts();
 
+    document.getElementById("iq").textContent = formatNumber(iq);
     document.getElementById("perSecond").textContent =
-        formatNumber(iqPerSecond) + " IQ pro Sekunde";
-
+        formatNumber(iqPerSecond * getGoldenMultiplier());
     document.getElementById("clickPower").textContent =
-        formatNumber(clickPower) + " IQ pro Klick";
-
-    document.getElementById("totalIQ").textContent =
-        formatNumber(totalIQ);
-
-    document.getElementById("rebirths").textContent = rebirths;
+        formatNumber(clickPower * getGoldenMultiplier());
     document.getElementById("rebirthCount").textContent = rebirths;
+    document.getElementById("leafCount").textContent = leaves;
 
-    document.getElementById("multiplier").textContent =
-        "x" + formatNumber(getMultiplier());
+    document.getElementById("multiplierText").textContent =
+        "Multiplikator: x" + formatNumber(getMultiplier());
 
     document.getElementById("rebirthBonus").textContent =
         "x" + formatNumber(getMultiplier());
 
     document.getElementById("rebirthCost").textContent =
-        formatNumber(getRebirthCost());
+        formatNumber(getRebirthCost()) + " IQ";
 
-    let totalTeachers = 0;
-    let totalUpgrades = 0;
-
-    teachers.forEach((teacher, index) => {
-        totalTeachers += teacher.owned;
-
-        document.getElementById(`teacherOwned${index}`).textContent =
-            teacher.owned;
-
-        document.getElementById(`teacherCost${index}`).textContent =
-            formatNumber(teacher.cost);
-
-        document.getElementById(`buyTeacher${index}`).disabled =
-            iq < teacher.cost;
-    });
-
-    upgrades.forEach((upgrade, index) => {
-        totalUpgrades += upgrade.owned;
-
-        document.getElementById(`upgradeOwned${index}`).textContent =
-            upgrade.owned;
-
-        document.getElementById(`upgradeCost${index}`).textContent =
-            formatNumber(upgrade.cost);
-
-        document.getElementById(`buyUpgrade${index}`).disabled =
-            iq < upgrade.cost;
-    });
+    document.getElementById("totalIQ").textContent = formatNumber(totalIQ);
 
     document.getElementById("totalTeachers").textContent =
-        totalTeachers;
+        teachers.reduce((sum, item) => sum + item.owned, 0);
 
     document.getElementById("totalUpgrades").textContent =
-        totalUpgrades;
+        upgrades.reduce((sum, item) => sum + item.owned, 0);
 
-    const rebirthButton = document.getElementById("rebirthButton");
-
-    rebirthButton.disabled = iq < getRebirthCost();
-
-    if (iq >= getRebirthCost()) {
-        document.getElementById("rebirthMessage").textContent =
-            "Du bist bereit für deinen nächsten Rebirth!";
-    } else {
-        document.getElementById("rebirthMessage").textContent =
-            "Dir fehlen noch " +
-            formatNumber(getRebirthCost() - iq) + " IQ!";
-    }
+    renderShops();
 }
 
-// ==============================
-// REBIRTH SYSTEM
-// ==============================
+// =============================
+// KLICKER
+// =============================
 
-document.getElementById("rebirthButton").addEventListener("click", function() {
+document.getElementById("clickButton").addEventListener("click", () => {
+    addIQ(clickPower * getGoldenMultiplier());
+});
+
+// =============================
+// SHOPS
+// =============================
+
+function renderShops() {
+    const teacherShop = document.getElementById("teacherShop");
+    const upgradeShop = document.getElementById("upgradeShop");
+    const limitedShop = document.getElementById("limitedShop");
+
+    teacherShop.innerHTML = "";
+    upgradeShop.innerHTML = "";
+    limitedShop.innerHTML = "";
+
+    teachers.forEach(teacher => {
+        const cost = Math.floor(
+            teacher.cost * Math.pow(1.65, teacher.owned)
+        );
+
+        const item = document.createElement("div");
+        item.className = "shop-item";
+
+        item.innerHTML = `
+            <h3>${teacher.name}</h3>
+            <p>Besitzt: ${teacher.owned}</p>
+            <p>+${formatNumber(teacher.boost)} IQ pro Sekunde</p>
+            <p>Preis: ${formatNumber(cost)} IQ</p>
+            <button ${iq < cost ? "disabled" : ""}>Kaufen</button>
+        `;
+
+        item.querySelector("button").addEventListener("click", () => {
+            if (iq >= cost) {
+                iq -= cost;
+                teacher.owned++;
+                updateGame();
+                saveGame();
+            }
+        });
+
+        teacherShop.appendChild(item);
+    });
+
+    upgrades.forEach(upgrade => {
+        const cost = Math.floor(
+            upgrade.cost * Math.pow(1.9, upgrade.owned)
+        );
+
+        const item = document.createElement("div");
+        item.className = "shop-item";
+
+        item.innerHTML = `
+            <h3>${upgrade.icon} ${upgrade.name}</h3>
+            <p>Besitzt: ${upgrade.owned}</p>
+            <p>+${formatNumber(upgrade.bonus)} IQ pro Klick</p>
+            <p>Preis: ${formatNumber(cost)} IQ</p>
+            <button ${iq < cost ? "disabled" : ""}>Kaufen</button>
+        `;
+
+        item.querySelector("button").addEventListener("click", () => {
+            if (iq >= cost) {
+                iq -= cost;
+                upgrade.owned++;
+                updateGame();
+                saveGame();
+            }
+        });
+
+        upgradeShop.appendChild(item);
+    });
+
+    limitedUpgrades.forEach(upgrade => {
+        const item = document.createElement("div");
+        item.className = "shop-item";
+
+        item.innerHTML = `
+            <h3>🍂 ${upgrade.name}</h3>
+            <p>+${formatNumber(upgrade.bonus)} IQ pro Klick</p>
+            <p>Preis: ${upgrade.cost} Blätter</p>
+            <p>${upgrade.bought ? "Bereits gekauft" : "Noch verfügbar"}</p>
+            <button ${upgrade.bought || leaves < upgrade.cost ? "disabled" : ""}>
+                ${upgrade.bought ? "Gekauft" : "Kaufen"}
+            </button>
+        `;
+
+        item.querySelector("button").addEventListener("click", () => {
+            if (!upgrade.bought && leaves >= upgrade.cost) {
+                leaves -= upgrade.cost;
+                upgrade.bought = true;
+                updateGame();
+                saveGame();
+            }
+        });
+
+        limitedShop.appendChild(item);
+    });
+}
+
+// =============================
+// REBIRTH
+// =============================
+
+document.getElementById("rebirthButton").addEventListener("click", () => {
     const cost = getRebirthCost();
 
     if (iq >= cost) {
-        const nextMultiplier = getMultiplier() * 2;
+        iq = 0;
+        rebirths++;
 
-        if (confirm(
-            "REBIRTH durchführen?\n\n" +
-            "Deine Lehrpersonen und Upgrades gehen verloren.\n" +
-            "Dein neuer Multiplikator wird x" +
-            formatNumber(nextMultiplier) + "!"
-        )) {
-            rebirths++;
+        teachers.forEach(teacher => teacher.owned = 0);
+        upgrades.forEach(upgrade => upgrade.owned = 0);
 
-            iq = 0;
+        document.getElementById("rebirthMessage").textContent =
+            "Rebirth geschafft! Dein Multiplikator wurde verdoppelt.";
 
-            teachers.forEach(teacher => {
-                teacher.owned = 0;
-            });
-
-            upgrades.forEach(upgrade => {
-                upgrade.owned = 0;
-            });
-
-            updateCosts();
-            calculateBoosts();
-            updateGame();
-            saveGame();
-        }
+        updateGame();
+        saveGame();
+    } else {
+        document.getElementById("rebirthMessage").textContent =
+            "Du brauchst noch mehr IQ!";
     }
 });
 
-// ==============================
-// SCHULPRÜFUNGEN
-// ==============================
+// =============================
+// GOLDEN IQ
+// =============================
 
-// difficulty: Easy, Medium, Hard, Expert
-// reward: Belohnung vor Rebirth-Multiplikator
+function spawnGoldenIQ() {
+    if (goldenReady || Date.now() < goldenActiveUntil) return;
 
-const questions = [
-    {
-        difficulty: "Leicht",
-        reward: 5000,
-        question: "Was ist 18 x 12?",
-        answers: ["206", "216", "226", "236"],
-        correct: 1
-    },
-    {
-        difficulty: "Leicht",
-        reward: 5000,
-        question: "Wie viele Bundesräte hat die Schweiz?",
-        answers: ["5", "6", "7", "8"],
-        correct: 2
-    },
-    {
-        difficulty: "Leicht",
-        reward: 5000,
-        question: "Was ist die Quadratwurzel von 196?",
-        answers: ["12", "13", "14", "16"],
-        correct: 2
-    },
-    {
-        difficulty: "Leicht",
-        reward: 5000,
-        question: "Wie viele Grad hat ein rechter Winkel?",
-        answers: ["45°", "60°", "90°", "180°"],
-        correct: 2
-    },
-    {
-        difficulty: "Leicht",
-        reward: 5000,
-        question: "Was ist 25% von 800?",
-        answers: ["100", "150", "200", "250"],
-        correct: 2
-    },
-    {
-        difficulty: "Leicht",
-        reward: 5000,
-        question: "Wie viele Bits hat ein Byte?",
-        answers: ["4", "8", "16", "32"],
-        correct: 1
-    },
+    goldenReady = true;
 
-    {
-        difficulty: "Mittel",
-        reward: 10000,
-        question: "Was ist 3/4 + 2/5?",
-        answers: ["23/20", "19/20", "17/20", "21/20"],
-        correct: 0
-    },
-    {
-        difficulty: "Mittel",
-        reward: 10000,
-        question: "Was ist die Lösung von 5x - 9 = 36?",
-        answers: ["7", "8", "9", "10"],
-        correct: 2
-    },
-    {
-        difficulty: "Mittel",
-        reward: 10000,
-        question: "In welchem Jahr begann der Erste Weltkrieg?",
-        answers: ["1912", "1914", "1916", "1918"],
-        correct: 1
-    },
-    {
-        difficulty: "Mittel",
-        reward: 10000,
-        question: "Was ist die chemische Formel von Wasser?",
-        answers: ["CO2", "H2O", "O2", "NaCl"],
-        correct: 1
-    },
-    {
-        difficulty: "Mittel",
-        reward: 10000,
-        question: "Was ist 2 hoch 8?",
-        answers: ["128", "196", "256", "512"],
-        correct: 2
-    },
-    {
-        difficulty: "Mittel",
-        reward: 10000,
-        question: "Was ist die Hauptstadt von Australien?",
-        answers: ["Sydney", "Melbourne", "Canberra", "Perth"],
-        correct: 2
-    },
+    document.getElementById("goldenStatus").textContent =
+        "Ein goldener IQ ist erschienen! Klicke ihn an!";
 
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Was ist die Ableitung von x²?",
-        answers: ["x", "2x", "x³", "2"],
-        correct: 1
-    },
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Wie viel ist 1440 : 24?",
-        answers: ["50", "55", "60", "65"],
-        correct: 2
-    },
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Welches Element hat das Symbol Fe?",
-        answers: ["Fluor", "Eisen", "Francium", "Fermium"],
-        correct: 1
-    },
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Wie gross ist die Winkelsumme eines Vierecks?",
-        answers: ["180°", "270°", "360°", "450°"],
-        correct: 2
-    },
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Was ist die Wahrscheinlichkeit, bei einem Würfel eine 6 zu würfeln?",
-        answers: ["1/2", "1/3", "1/6", "1/12"],
-        correct: 2
-    },
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Welches Organ produziert Insulin?",
-        answers: ["Leber", "Niere", "Bauchspeicheldrüse", "Herz"],
-        correct: 2
-    },
+    document.getElementById("goldenButton").classList.remove("hidden");
+}
 
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Was ist die Lösung von 3(x - 4) = 2x + 9?",
-        answers: ["18", "19", "20", "21"],
-        correct: 1
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Was ist die Summe der Innenwinkel eines Fünfecks?",
-        answers: ["360°", "450°", "540°", "720°"],
-        correct: 2
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Welcher Planet hat die höchste mittlere Dichte?",
-        answers: ["Mars", "Venus", "Erde", "Merkur"],
-        correct: 2
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Was ist 2 hoch 10?",
-        answers: ["512", "1024", "2048", "4096"],
-        correct: 1
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Welcher dieser Werte ist eine Primzahl?",
-        answers: ["51", "57", "61", "69"],
-        correct: 2
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Wie lautet die Dezimalzahl von 3/8?",
-        answers: ["0,325", "0,375", "0,425", "0,625"],
-        correct: 1
-    },
+document.getElementById("goldenButton").addEventListener("click", () => {
+    if (!goldenReady) return;
 
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Wie viele Bytes sind 1 Kilobyte im Dezimalsystem?",
-        answers: ["100", "512", "1000", "1024"],
-        correct: 2
-    },
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Welcher Kontinent hat die meisten Länder?",
-        answers: ["Europa", "Afrika", "Asien", "Südamerika"],
-        correct: 1
-    },
-    {
-        difficulty: "Schwer",
-        reward: 25000,
-        question: "Wie lautet die Formel für die Fläche eines Kreises?",
-        answers: ["2πr", "πr²", "πd", "r²/2"],
-        correct: 1
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Welche Zahl ist die kleinste gemeinsame Vielfache von 12 und 18?",
-        answers: ["24", "30", "36", "72"],
-        correct: 2
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Was ist die Lösung von 2x² = 50 für x > 0?",
-        answers: ["4", "5", "10", "25"],
-        correct: 1
-    },
-    {
-        difficulty: "Experte",
-        reward: 50000,
-        question: "Welcher Wert entspricht der Binärzahl 1010?",
-        answers: ["8", "9", "10", "12"],
-        correct: 2
+    goldenReady = false;
+    goldenActiveUntil = Date.now() + 3 * 60 * 1000;
+    nextGoldenTime = goldenActiveUntil + 2 * 60 * 1000;
+
+    document.getElementById("goldenButton").classList.add("hidden");
+
+    document.getElementById("goldenStatus").textContent =
+        "Golden IQ aktiv! Du bekommst 7-fachen IQ für 3 Minuten.";
+});
+
+function updateGoldenTimer() {
+    const remaining = Math.max(0, goldenActiveUntil - Date.now());
+
+    if (remaining > 0) {
+        const seconds = Math.ceil(remaining / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const rest = seconds % 60;
+
+        document.getElementById("goldenTimer").textContent =
+            `7x Bonus noch ${minutes}:${String(rest).padStart(2, "0")} Minuten`;
+    } else {
+        document.getElementById("goldenTimer").textContent = "";
+
+        if (goldenActiveUntil > 0) {
+            document.getElementById("goldenStatus").textContent =
+                "Der Golden-IQ-Bonus ist vorbei.";
+
+            goldenActiveUntil = 0;
+        }
     }
-];
+}
 
-let testTimer = 60;
-let questionTimer = 20;
-let testActive = false;
-let currentQuestion = null;
-let lastQuestionIndex = -1;
+// =============================
+// BOSSFIGHT GEGEN HERR RITTER
+// =============================
 
-// ==============================
-// NEUEN TEST STARTEN
-// ==============================
+function startBossFight() {
+    if (bossActive) return;
 
-function startTest() {
-    testActive = true;
-    questionTimer = 20;
+    bossActive = true;
+    bossQuestionIndex = 0;
+    bossCorrect = 0;
 
-    let randomIndex;
+    bossQuestions = [...bossQuestionPool]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
 
-    do {
-        randomIndex = Math.floor(Math.random() * questions.length);
-    } while (randomIndex === lastQuestionIndex);
+    document.getElementById("bossGame").classList.remove("hidden");
 
-    lastQuestionIndex = randomIndex;
-    currentQuestion = questions[randomIndex];
+    document.getElementById("bossResult").textContent =
+        "Herr Ritter fordert dich heraus! Beantworte 3 Fragen!";
 
-    document.getElementById("quiz").hidden = false;
+    showBossQuestion();
+}
 
-    document.getElementById("difficulty").textContent =
-        "Schwierigkeit: " + currentQuestion.difficulty;
+function showBossQuestion() {
+    if (bossQuestionIndex >= bossQuestions.length) {
+        finishBossFight();
+        return;
+    }
 
-    document.getElementById("question").textContent =
-        currentQuestion.question;
+    const question = bossQuestions[bossQuestionIndex];
 
-    document.getElementById("quizResult").textContent = "";
+    document.getElementById("bossQuestion").textContent = question.q;
 
-    const answers = document.getElementById("answers");
+    document.getElementById("bossProgress").textContent =
+        `Frage ${bossQuestionIndex + 1} von 3`;
+
+    const answers = document.getElementById("bossAnswers");
     answers.innerHTML = "";
 
-    currentQuestion.answers.forEach((answer, index) => {
+    question.a.forEach((answer, index) => {
         const button = document.createElement("button");
-
         button.textContent = answer;
 
         button.addEventListener("click", () => {
-            answerQuestion(index);
+            if (!bossActive) return;
+
+            if (index === question.c) {
+                bossCorrect++;
+            }
+
+            bossQuestionIndex++;
+            showBossQuestion();
         });
 
         answers.appendChild(button);
     });
-
-    document.getElementById("testTimer").textContent =
-        "TEST LÄUFT! Du hast 20 Sekunden!";
-
-    document.getElementById("questionTimer").textContent =
-        "20 Sekunden";
 }
 
-// ==============================
-// ANTWORT ÜBERPRÜFEN
-// ==============================
+function finishBossFight() {
+    bossActive = false;
 
-function answerQuestion(index) {
-    if (!testActive) return;
+    document.getElementById("bossGame").classList.add("hidden");
 
-    testActive = false;
+    if (bossCorrect >= 2) {
+        addIQ(1000000);
 
-    const buttons = document.querySelectorAll("#answers button");
-
-    buttons.forEach(button => {
-        button.disabled = true;
-    });
-
-    const result = document.getElementById("quizResult");
-
-    if (index === currentQuestion.correct) {
-        const reward = currentQuestion.reward * getMultiplier();
-
-        iq += reward;
-        totalIQ += reward;
-
-        result.textContent =
-            "RICHTIG! +" + formatNumber(reward) + " IQ! 🎉";
+        document.getElementById("bossResult").textContent =
+            "Du hast Herr Ritter besiegt! 1'000'000 IQ gewonnen!";
     } else {
-        result.textContent =
-            "FALSCH! Leider bekommst du diesmal nichts.";
+        iq = Math.floor(iq * 0.5);
+
+        document.getElementById("bossResult").textContent =
+            "Herr Ritter hat gewonnen! Dein IQ wurde halbiert.";
+
+        updateGame();
     }
 
-    testTimer = 60;
-
-    updateGame();
     saveGame();
 }
 
-// ==============================
-// TESTSYSTEM TIMER
-// ==============================
+function updateBossTimer() {
+    const remaining = Math.max(0, nextBossTime - Date.now());
 
-function tickTest() {
+    if (bossActive) {
+        document.getElementById("bossStatus").textContent =
+            "Bossfight läuft!";
+        return;
+    }
+
+    const seconds = Math.ceil(remaining / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const rest = seconds % 60;
+
+    document.getElementById("bossStatus").textContent =
+        `Nächster Bossfight in ${minutes}:${String(rest).padStart(2, "0")}`;
+
+    if (remaining <= 0) {
+        nextBossTime = Date.now() + 30 * 60 * 1000;
+        startBossFight();
+    }
+}
+
+// =============================
+// BLÄTTER-EVENT
+// =============================
+
+function startLeafEvent() {
+    if (leafEventActive) return;
+
+    leafEventActive = true;
+    leavesSpawned = 0;
+    leafEventEnd = Date.now() + 5 * 60 * 1000;
+    leafSpawnTimer = 0;
+
+    document.getElementById("leafStatus").textContent =
+        "Das Blätter-Event läuft! Sammle die Blätter!";
+
+    document.getElementById("leafInstructions").textContent =
+        "Klicke auf die herunterfallenden Blätter!";
+
+    document.getElementById("leafArea").innerHTML = "";
+}
+
+function spawnLeaf() {
+    if (!leafEventActive || leavesSpawned >= 50) return;
+
+    leavesSpawned++;
+
+    const leaf = document.createElement("button");
+    leaf.className = "falling-leaf";
+    leaf.textContent = "🍃";
+
+    const area = document.getElementById("leafArea");
+    const maxLeft = Math.max(0, area.clientWidth - 45);
+
+    leaf.style.left = Math.floor(Math.random() * maxLeft) + "px";
+    leaf.style.animationDuration = (3 + Math.random() * 2) + "s";
+
+    leaf.addEventListener("click", () => {
+        if (!leafEventActive || leaf.dataset.collected === "yes") return;
+
+        leaf.dataset.collected = "yes";
+        leaves++;
+        leaf.remove();
+
+        document.getElementById("leafCount").textContent = leaves;
+
+        renderShops();
+        saveGame();
+    });
+
+    area.appendChild(leaf);
+
+    setTimeout(() => {
+        if (leaf.isConnected) leaf.remove();
+    }, 5500);
+}
+
+function endLeafEvent() {
+    leafEventActive = false;
+
+    document.getElementById("leafStatus").textContent =
+        `Das Blätter-Event ist vorbei! Du hast ${formatNumber(leaves)} Blätter insgesamt.`;
+
+    document.getElementById("leafInstructions").textContent =
+        "Das nächste Event startet in ungefähr einer Stunde.";
+
+    document.getElementById("leafArea").innerHTML = "";
+
+    saveGame();
+}
+
+function updateLeafEvent() {
+    if (!leafEventActive) return;
+
+    const remaining = Math.max(0, leafEventEnd - Date.now());
+
+    const seconds = Math.ceil(remaining / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const rest = seconds % 60;
+
+    document.getElementById("leafStatus").textContent =
+        `Blätter-Event läuft noch ${minutes}:${String(rest).padStart(2, "0")} | ${leavesSpawned}/50 Blätter erschienen`;
+
+    if (Date.now() >= leafEventEnd) {
+        endLeafEvent();
+    }
+}
+
+// =============================
+// SCHULTEST
+// =============================
+
+function startTest() {
+    if (testActive) return;
+
+    testActive = true;
+    testTimeLeft = 20;
+
+    const available = questions.filter(q =>
+        q.level <= Math.min(3, 1 + Math.floor(questionNumber / 5))
+    );
+
+    currentQuestion =
+        available[Math.floor(Math.random() * available.length)];
+
+    document.getElementById("quiz").classList.remove("hidden");
+    document.getElementById("quizResult").textContent = "";
+    document.getElementById("question").textContent = currentQuestion.q;
+
+    document.getElementById("difficulty").textContent =
+        "Schwierigkeit: " +
+        ["", "Leicht", "Mittel", "Schwer"][currentQuestion.level];
+
+    const answers = document.getElementById("answers");
+    answers.innerHTML = "";
+
+    currentQuestion.a.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.textContent = answer;
+
+        button.addEventListener("click", () => {
+            if (!testActive) return;
+
+            testActive = false;
+
+            if (index === currentQuestion.c) {
+                const reward =
+                    [0, 5000, 10000, 25000][currentQuestion.level] *
+                    getMultiplier();
+
+                addIQ(reward);
+
+                document.getElementById("quizResult").textContent =
+                    `Richtig! Du bekommst ${formatNumber(reward)} IQ.`;
+            } else {
+                document.getElementById("quizResult").textContent =
+                    "Leider falsch! Du bekommst diesmal nichts.";
+            }
+
+            questionNumber++;
+            saveGame();
+        });
+
+        answers.appendChild(button);
+    });
+}
+
+function updateTest() {
     if (testActive) {
-        questionTimer--;
+        testTimeLeft--;
 
         document.getElementById("questionTimer").textContent =
-            questionTimer + " Sekunden";
+            `Noch ${testTimeLeft} Sekunden!`;
 
-        if (questionTimer <= 0) {
+        if (testTimeLeft <= 0) {
             testActive = false;
 
             document.getElementById("quizResult").textContent =
-                "ZEIT ABGELAUFEN! Keine Belohnung.";
+                "Zeit abgelaufen! Diesmal gibt es keine Belohnung.";
 
-            document.querySelectorAll("#answers button").forEach(button => {
-                button.disabled = true;
-            });
-
-            testTimer = 60;
+            questionNumber++;
         }
 
-    } else {
-        testTimer--;
+        return;
+    }
 
-        if (testTimer <= 0) {
-            startTest();
-        } else {
-            document.getElementById("testTimer").textContent =
-                "Nächster Test in " + testTimer + " Sekunden";
+    testCountdown--;
+
+    document.getElementById("testTimer").textContent =
+        `Nächster Test in ${testCountdown} Sekunden`;
+
+    if (testCountdown <= 0) {
+        testCountdown = 60;
+        startTest();
+    }
+}
+
+// =============================
+// SPIEL-TIMER
+// =============================
+
+function gameTick() {
+    if (iqPerSecond > 0) {
+        addIQ(iqPerSecond * getGoldenMultiplier());
+    }
+
+    updateGoldenTimer();
+    updateBossTimer();
+    updateLeafEvent();
+    updateTest();
+
+    if (
+        !goldenReady &&
+        Date.now() >= nextGoldenTime &&
+        Date.now() >= goldenActiveUntil
+    ) {
+        spawnGoldenIQ();
+    }
+
+    if (!leafEventActive && Date.now() >= nextLeafTime) {
+        startLeafEvent();
+        nextLeafTime = Date.now() + 60 * 60 * 1000;
+    }
+
+    if (leafEventActive && leavesSpawned < 50) {
+        leafSpawnTimer++;
+
+        if (leafSpawnTimer >= 5) {
+            leafSpawnTimer = 0;
+            spawnLeaf();
         }
     }
 }
 
-// ==============================
-// AUTOMATISCHER IQ
-// ==============================
+// =============================
+// SPEICHERN
+// =============================
 
-setInterval(function() {
-    iq += iqPerSecond;
-    totalIQ += iqPerSecond;
+function saveGame() {
+    const saveData = {
+        iq,
+        totalIQ,
+        rebirths,
+        leaves,
+        teachers: teachers.map(t => t.owned),
+        upgrades: upgrades.map(u => u.owned),
+        limitedUpgrades: limitedUpgrades.map(u => u.bought),
+        questionNumber
+    };
 
-    updateGame();
-}, 1000);
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+}
 
-// Jede Sekunde den Test-Timer prüfen
-setInterval(tickTest, 1000);
+// =============================
+// LADEN
+// =============================
 
-// ==============================
-// AUTOMATISCH SPEICHERN
-// ==============================
+function loadGame() {
+    const saved = localStorage.getItem(SAVE_KEY);
 
-setInterval(saveGame, 5000);
+    if (!saved) return;
 
-// ==============================
-// SPIEL ZURÜCKSETZEN
-// ==============================
+    try {
+        const data = JSON.parse(saved);
 
-document.getElementById("resetButton").addEventListener("click", function() {
-    if (confirm("Willst du deinen ganzen Spielstand löschen?")) {
+        iq = data.iq || 0;
+        totalIQ = data.totalIQ || 0;
+        rebirths = data.rebirths || 0;
+        leaves = data.leaves || 0;
+        questionNumber = data.questionNumber || 0;
+
+        if (Array.isArray(data.teachers)) {
+            teachers.forEach((teacher, index) => {
+                teacher.owned = data.teachers[index] || 0;
+            });
+        }
+
+        if (Array.isArray(data.upgrades)) {
+            upgrades.forEach((upgrade, index) => {
+                upgrade.owned = data.upgrades[index] || 0;
+            });
+        }
+
+        if (Array.isArray(data.limitedUpgrades)) {
+            limitedUpgrades.forEach((upgrade, index) => {
+                upgrade.bought = data.limitedUpgrades[index] || false;
+            });
+        }
+
+    } catch (error) {
+        console.error("Spielstand konnte nicht geladen werden:", error);
+    }
+}
+
+// =============================
+// SPIELSTAND ZURÜCKSETZEN
+// =============================
+
+document.getElementById("resetButton").addEventListener("click", () => {
+    const confirmed = confirm(
+        "Willst du wirklich deinen ganzen Spielstand löschen?"
+    );
+
+    if (confirmed) {
         localStorage.removeItem(SAVE_KEY);
         location.reload();
     }
 });
 
-// ==============================
+// =============================
 // SPIEL STARTEN
-// ==============================
+// =============================
 
-createTeacherShop();
-createUpgradeShop();
 loadGame();
+updateGame();
+
+setInterval(gameTick, 1000);
+setInterval(saveGame, 5000);
