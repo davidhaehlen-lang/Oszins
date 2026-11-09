@@ -1,302 +1,248 @@
-
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
-    background: #101827;
+    background: #101426;
     color: white;
-    text-align: center;
 }
 
 header {
-    background: #172c49;
-    padding: 25px;
-    border-bottom: 4px solid #f2c94c;
-}
-
-.logo {
-    width: 75px;
-    height: 75px;
-    background: #f2c94c;
-    color: #172c49;
-    border-radius: 15px;
-    margin: auto auto 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 25px;
-}
-
-.logo small {
-    font-size: 13px;
+    text-align: center;
+    padding: 30px 15px;
+    background: #1b2340;
+    border-bottom: 3px solid #e5b93f;
 }
 
 header h1 {
-    font-size: 38px;
-    color: #f2c94c;
+    margin: 10px 0;
 }
 
-header p {
-    margin-top: 8px;
-    color: #ddd;
+.logo {
+    font-size: 32px;
+    font-weight: bold;
+    color: #e5b93f;
+}
+
+.logo span {
+    color: white;
 }
 
 main {
     max-width: 1100px;
-    margin: 30px auto;
-    padding: 15px;
-}
-
-.clicker,
-.shop,
-.stats,
-.test-section,
-.rebirth-section {
-    background: #1c2b40;
-    border-radius: 18px;
-    padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 5px 15px #0005;
-}
-
-h2 {
-    color: #f2c94c;
-    margin-bottom: 15px;
-}
-
-#iq {
-    font-size: 45px;
-    font-weight: bold;
-    color: #f2c94c;
-    margin: 15px;
-}
-
-#perSecond,
-#clickPower {
-    color: #b8c7d9;
-    margin: 10px;
-}
-
-#clickButton {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    border: 5px solid #f2c94c;
-    background: #263e5c;
-    font-size: 80px;
-    cursor: pointer;
-    transition: 0.15s;
-    margin: 20px;
-}
-
-#clickButton:hover {
-    transform: scale(1.08);
-    background: #355477;
-}
-
-#clickButton:active {
-    transform: scale(0.93);
-}
-
-.rebirth-info {
-    margin-top: 20px;
-    color: #b8c7d9;
-    line-height: 1.8;
-}
-
-/* Schulprüfungen */
-
-.test-section {
-    border: 2px solid #477fc0;
-}
-
-#testTimer {
-    color: #b8c7d9;
-    margin: 12px;
-}
-
-.quiz {
-    background: #263e5c;
+    margin: auto;
     padding: 20px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    background: #202a49;
+    border: 1px solid #39476d;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat span {
+    display: block;
+    color: #c7d0e8;
+    margin-bottom: 8px;
+}
+
+.stat strong {
+    font-size: 21px;
+    color: #f4ca58;
+    overflow-wrap: anywhere;
+}
+
+.card {
+    background: #1b2340;
+    border: 1px solid #39476d;
+    border-radius: 15px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.card h2 {
+    color: #f4ca58;
+    margin-top: 0;
+}
+
+.clicker {
+    text-align: center;
+}
+
+.brain-button {
+    font-size: 85px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.brain-button:hover {
+    transform: scale(1.12);
+}
+
+.brain-button:active {
+    transform: scale(0.9);
+}
+
+button {
+    background: #e5b93f;
+    color: #171717;
+    border: none;
+    border-radius: 9px;
+    padding: 12px 17px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    filter: brightness(1.12);
+}
+
+button:disabled {
+    background: #697084;
+    color: #d0d0d0;
+    cursor: not-allowed;
+}
+
+.golden-button {
+    background: linear-gradient(135deg, #fff0a6, #e5a900);
+    color: #4c3100;
+    font-size: 18px;
+    padding: 17px 25px;
+    animation: goldPulse 1s infinite alternate;
+}
+
+@keyframes goldPulse {
+    from {
+        box-shadow: 0 0 5px #e5b93f;
+    }
+    to {
+        box-shadow: 0 0 25px #ffe36a;
+    }
+}
+
+.event-card {
+    text-align: center;
+}
+
+.leaf-card {
+    overflow: hidden;
+}
+
+#leafArea {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+    background: #101a29;
+    border: 2px dashed #72945d;
     border-radius: 12px;
     margin-top: 15px;
 }
 
-.quiz h3 {
-    margin: 15px 0;
-    font-size: 21px;
+.falling-leaf {
+    position: absolute;
+    top: -45px;
+    font-size: 32px;
+    padding: 5px;
+    background: transparent;
+    animation: leafFall linear forwards;
+    z-index: 2;
 }
 
-.difficulty {
-    display: inline-block;
-    background: #f2c94c;
-    color: #172c49;
-    padding: 7px 14px;
-    border-radius: 20px;
-    font-weight: bold;
+@keyframes leafFall {
+    from {
+        transform: translateY(0) rotate(0deg);
+    }
+    to {
+        transform: translateY(330px) rotate(360deg);
+    }
 }
 
-#questionTimer {
-    color: #ffcc66;
-    margin-bottom: 15px;
-}
-
-#answers {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-#answers button {
-    background: #f2c94c;
-    color: #172c49;
-    border: none;
-    padding: 13px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.15s;
-}
-
-#answers button:hover:not(:disabled) {
-    background: #ffe17b;
-    transform: scale(1.02);
-}
-
-#answers button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-#quizResult {
-    margin-top: 15px;
-    font-weight: bold;
-    line-height: 1.5;
-}
-
-/* Shops */
-
-.teacher-list {
+.shop {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
+    gap: 12px;
 }
 
-.teacher {
-    background: #263e5c;
-    border: 2px solid #3c5675;
-    border-radius: 12px;
-    padding: 18px;
-}
-
-.teacher h3 {
-    color: #f2c94c;
-    margin-bottom: 12px;
-}
-
-.teacher p {
-    margin: 9px;
-    font-size: 14px;
-}
-
-.teacher button {
-    background: #f2c94c;
-    color: #172c49;
-    padding: 11px 16px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.teacher button:hover:not(:disabled) {
-    background: #ffe17b;
-}
-
-.teacher button:disabled {
-    background: #777;
-    color: #ddd;
-    cursor: not-allowed;
-}
-
-/* Rebirth */
-
-.rebirth-section {
-    border: 2px solid #a56be0;
-}
-
-.rebirth-card {
-    background: #30264c;
-    border-radius: 15px;
-    padding: 25px;
-    margin-top: 15px;
-    line-height: 2;
-}
-
-#rebirthButton {
-    background: linear-gradient(135deg, #a56be0, #6240ad);
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    padding: 16px 35px;
-    border: none;
+.shop-item {
+    background: #263252;
+    border: 1px solid #46577f;
+    padding: 14px;
     border-radius: 10px;
-    margin: 15px;
-    cursor: pointer;
 }
 
-#rebirthButton:hover:not(:disabled) {
-    transform: scale(1.05);
+.shop-item h3 {
+    margin-top: 0;
+    color: #f4ca58;
 }
 
-#rebirthButton:disabled {
-    background: #555;
-    cursor: not-allowed;
+.shop-item p {
+    margin: 7px 0;
 }
 
-/* Statistiken */
-
-.stats p {
-    margin: 12px;
+.limited-card {
+    border: 2px solid #799e55;
 }
 
-#resetButton {
-    background: #d9534f;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    cursor: pointer;
+.limited-card h2 {
+    color: #a9d77d;
+}
+
+.limited-card .shop-item {
+    border-color: #799e55;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
     margin-top: 15px;
+}
+
+.answers button {
+    width: 100%;
+    margin: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.reset-button {
+    background: #a94444;
+    color: white;
 }
 
 footer {
-    background: #172c49;
+    text-align: center;
     padding: 20px;
-    color: #aaa;
-    margin-top: 40px;
+    color: #9da8c6;
 }
 
 @media (max-width: 600px) {
-    header h1 {
-        font-size: 28px;
+    main {
+        padding: 12px;
     }
 
-    #clickButton {
-        width: 130px;
-        height: 130px;
-        font-size: 65px;
+    .card {
+        padding: 16px;
     }
 
-    #answers {
-        grid-template-columns: 1fr;
+    .brain-button {
+        font-size: 70px;
     }
 }
