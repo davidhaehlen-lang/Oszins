@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -8,117 +7,106 @@
     <link rel="stylesheet" href="style.css">
     <script src="main.js" defer></script>
 </head>
-
 <body>
 
 <header>
-    <div class="logo">
-        <span>OSZ</span>
-        <small>INS</small>
-    </div>
-
+    <div class="logo">OSZ<span>INS</span></div>
     <h1>OSZINS CLICKER</h1>
-    <p>Werde zum grössten IQ-Genie der Schule!</p>
+    <p>Sammle IQ und werde zur Legende!</p>
 </header>
 
 <main>
-
-    <section class="clicker">
-        <h2>🧠 Dein IQ</h2>
-
-        <div id="iq">0 IQ</div>
-        <p id="perSecond">0 IQ pro Sekunde</p>
-
-        <button id="clickButton">🧠</button>
-
-        <p>Klicke auf das Gehirn!</p>
-        <p id="clickPower">1 IQ pro Klick</p>
-
-        <div class="rebirth-info">
-            <p>Rebirths: <span id="rebirths">0</span></p>
-            <p>Multiplikator: <span id="multiplier">x1</span></p>
-        </div>
-    </section>
-
-    <section class="test-section">
-        <h2>📝 Schulprüfungen</h2>
-
-        <p id="testTimer">
-            Nächster Test in 60 Sekunden
-        </p>
-
-        <div id="quiz" class="quiz" hidden>
-            <span id="difficulty" class="difficulty"></span>
-
-            <h3 id="question">Frage</h3>
-
-            <p id="questionTimer">20 Sekunden</p>
-
-            <div id="answers"></div>
-
-            <p id="quizResult"></p>
-        </div>
-    </section>
-
-    <section class="shop">
-        <h2>🧑‍🏫 Lehrpersonen-Shop</h2>
-        <p>Lehrpersonen produzieren automatisch IQ.</p>
-
-        <div id="teacherShop" class="teacher-list"></div>
-    </section>
-
-    <section class="shop">
-        <h2>🎒 Schulmaterial-Upgrades</h2>
-        <p>Verbessere deine Klicks mit Schulsachen!</p>
-
-        <div id="upgradeShop" class="teacher-list"></div>
-    </section>
-
-    <section class="rebirth-section">
-        <h2>♻️ Rebirth-System</h2>
-
-        <p>Starte von vorne und werde dauerhaft stärker!</p>
-
-        <div class="rebirth-card">
-
-            <p>Deine Rebirths:
-                <strong id="rebirthCount">0</strong>
-            </p>
-
-            <p>Multiplikator:
-                <strong id="rebirthBonus">x1</strong>
-            </p>
-
-            <p>Benötigter IQ:
-                <strong id="rebirthCost">1'000'000</strong>
-            </p>
-
-            <button id="rebirthButton">
-                REBIRTH
-            </button>
-
-            <p id="rebirthMessage">
-                Sammle genügend IQ!
-            </p>
-        </div>
-    </section>
-
     <section class="stats">
-        <h2>📊 Statistiken</h2>
-
-        <p>Gesamter IQ: <span id="totalIQ">0</span></p>
-        <p>Gekaufte Lehrpersonen: <span id="totalTeachers">0</span></p>
-        <p>Gekaufte Upgrades: <span id="totalUpgrades">0</span></p>
-
-        <button id="resetButton">
-            Spiel zurücksetzen
-        </button>
+        <div class="stat"><span>🧠 IQ</span><strong id="iq">0</strong></div>
+        <div class="stat"><span>⚡ IQ pro Sekunde</span><strong id="perSecond">0</strong></div>
+        <div class="stat"><span>🖱️ IQ pro Klick</span><strong id="clickPower">1</strong></div>
+        <div class="stat"><span>♻️ Rebirths</span><strong id="rebirthCount">0</strong></div>
+        <div class="stat"><span>🍃 Blätter</span><strong id="leafCount">0</strong></div>
     </section>
 
+    <section class="card clicker">
+        <h2>Dein IQ-Klicker</h2>
+        <button id="clickButton" class="brain-button">🧠</button>
+        <p>Klicke auf das Gehirn, um IQ zu sammeln!</p>
+        <p id="multiplierText">Multiplikator: x1</p>
+    </section>
+
+    <section class="card event-card">
+        <h2>✨ Golden IQ</h2>
+        <p id="goldenStatus">Der goldene IQ ist noch nicht erschienen.</p>
+        <button id="goldenButton" class="golden-button hidden">
+            🌟 GOLDEN IQ ABHOLEN
+        </button>
+        <p id="goldenTimer"></p>
+    </section>
+
+    <section class="card event-card">
+        <h2>👨‍🏫 Bossfight: Herr Ritter</h2>
+        <p id="bossStatus">Nächster Bossfight in 30:00</p>
+        <div id="bossGame" class="hidden">
+            <h3 id="bossQuestion"></h3>
+            <div id="bossAnswers" class="answers"></div>
+            <p id="bossProgress"></p>
+        </div>
+        <p id="bossResult"></p>
+    </section>
+
+    <section class="card leaf-card">
+        <h2>🍃 Blätter-Event</h2>
+        <p id="leafStatus">Nächstes Blätter-Event in 60:00</p>
+        <p id="leafInstructions">Während des Events fallen 50 Blätter herunter. Klicke sie an!</p>
+        <div id="leafArea"></div>
+    </section>
+
+    <section class="card">
+        <h2>📝 Schultest</h2>
+        <p id="testTimer">Nächster Test in 60 Sekunden</p>
+        <div id="quiz" class="hidden">
+            <h3 id="question"></h3>
+            <div id="answers" class="answers"></div>
+            <p id="quizResult"></p>
+            <p id="questionTimer"></p>
+        </div>
+        <p id="difficulty"></p>
+    </section>
+
+    <section class="card">
+        <h2>👨‍🏫 Lehrer-Shop</h2>
+        <div id="teacherShop" class="shop"></div>
+    </section>
+
+    <section class="card">
+        <h2>🎒 Schulzeug-Upgrades</h2>
+        <div id="upgradeShop" class="shop"></div>
+    </section>
+
+    <section class="card limited-card">
+        <h2>🍂 Limitierte Blatt-Upgrades</h2>
+        <p>Jedes Upgrade kann nur einmal gekauft werden.</p>
+        <div id="limitedShop" class="shop"></div>
+    </section>
+
+    <section class="card">
+        <h2>♻️ Rebirth</h2>
+        <p>Beim Rebirth werden deine Lehrer und normalen Upgrades zurückgesetzt.</p>
+        <p>Dein Multiplikator wird verdoppelt.</p>
+        <p>Aktueller Bonus: <strong id="rebirthBonus">x1</strong></p>
+        <p>Kosten: <strong id="rebirthCost">1'000'000 IQ</strong></p>
+        <button id="rebirthButton">Rebirth durchführen</button>
+        <p id="rebirthMessage"></p>
+    </section>
+
+    <section class="card">
+        <h2>📊 Statistiken</h2>
+        <p>Gesamter IQ verdient: <strong id="totalIQ">0</strong></p>
+        <p>Lehrer insgesamt: <strong id="totalTeachers">0</strong></p>
+        <p>Normale Upgrades: <strong id="totalUpgrades">0</strong></p>
+        <button id="resetButton" class="reset-button">Spielstand zurücksetzen</button>
+    </section>
 </main>
 
 <footer>
-    OSZINS CLICKER | Viel Erfolg beim Lernen!
+    <p>OSZINS CLICKER – Version 4.0</p>
 </footer>
 
 </body>
