@@ -539,6 +539,7 @@ function spawnLeaf() {
 
 function endLeafEvent() {
     leafEventActive = false;
+    nextLeafTime = Date.now() + 60 * 60 * 1000;
 
     document.getElementById("leafStatus").textContent =
         `Das Blätter-Event ist vorbei! Du hast ${formatNumber(leaves)} Blätter insgesamt.`;
@@ -552,18 +553,32 @@ function endLeafEvent() {
 }
 
 function updateLeafEvent() {
-    if (!leafEventActive) return;
+    // Countdown waehrend das Event noch nicht laeuft
+    if (!leafEventActive) {
+        const remaining = Math.max(0, nextLeafTime - Date.now());
+        const seconds = Math.ceil(remaining / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const rest = seconds % 60;
 
+        document.getElementById("leafStatus").textContent =
+            `Naechstes Blaetter-Event in ${minutes}:${String(rest).padStart(2, "0")}`;
+
+        if (remaining <= 0) {
+            startLeafEvent();
+        }
+        return;
+    }
+
+    // Countdown waehrend des laufenden Events
     const remaining = Math.max(0, leafEventEnd - Date.now());
-
     const seconds = Math.ceil(remaining / 1000);
     const minutes = Math.floor(seconds / 60);
     const rest = seconds % 60;
 
     document.getElementById("leafStatus").textContent =
-        `Blätter-Event läuft noch ${minutes}:${String(rest).padStart(2, "0")} | ${leavesSpawned}/50 Blätter erschienen`;
+        `Blaetter-Event laeuft noch ${minutes}:${String(rest).padStart(2, "0")} | ${leavesSpawned}/50 Blaetter erschienen`;
 
-    if (Date.now() >= leafEventEnd) {
+    if (remaining <= 0) {
         endLeafEvent();
     }
 }
@@ -679,11 +694,6 @@ function gameTick() {
         spawnGoldenIQ();
     }
 
-    if (!leafEventActive && Date.now() >= nextLeafTime) {
-        startLeafEvent();
-        nextLeafTime = Date.now() + 60 * 60 * 1000;
-    }
-
     if (leafEventActive && leavesSpawned < 50) {
         leafSpawnTimer++;
 
@@ -778,3 +788,4 @@ updateGame();
 
 setInterval(gameTick, 1000);
 setInterval(saveGame, 5000);
+``
