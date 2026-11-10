@@ -1,5 +1,5 @@
 // =============================
-// OSZINS CLICKER VERSION 4.0
+// OSZINS CLICKER VERSION 5.0
 // =============================
 
 const SAVE_KEY = "oszinsSave";
@@ -10,6 +10,7 @@ let clickPower = 1;
 let iqPerSecond = 0;
 let rebirths = 0;
 let leaves = 0;
+let totalClicks = 0;
 
 let goldenReady = false;
 let goldenActiveUntil = 0;
@@ -191,6 +192,11 @@ function updateGame() {
 
     document.getElementById("totalIQ").textContent = formatNumber(totalIQ);
 
+    const clicksDisplay = document.getElementById("totalClicks");
+    if (clicksDisplay) {
+        clicksDisplay.textContent = formatNumber(totalClicks);
+    }
+
     document.getElementById("totalTeachers").textContent =
         teachers.reduce((sum, item) => sum + item.owned, 0);
 
@@ -205,6 +211,13 @@ function updateGame() {
 // =============================
 
 document.getElementById("clickButton").addEventListener("click", () => {
+    totalClicks++;
+
+    const clickDisplay = document.getElementById("totalClicks");
+    if (clickDisplay) {
+        clickDisplay.textContent = formatNumber(totalClicks);
+    }
+
     addIQ(clickPower * getGoldenMultiplier());
 });
 
@@ -553,7 +566,6 @@ function endLeafEvent() {
 }
 
 function updateLeafEvent() {
-    // Countdown waehrend das Event noch nicht laeuft
     if (!leafEventActive) {
         const remaining = Math.max(0, nextLeafTime - Date.now());
         const seconds = Math.ceil(remaining / 1000);
@@ -561,22 +573,22 @@ function updateLeafEvent() {
         const rest = seconds % 60;
 
         document.getElementById("leafStatus").textContent =
-            `Naechstes Blaetter-Event in ${minutes}:${String(rest).padStart(2, "0")}`;
+            `Nächstes Blätter-Event in ${minutes}:${String(rest).padStart(2, "0")}`;
 
         if (remaining <= 0) {
             startLeafEvent();
         }
+
         return;
     }
 
-    // Countdown waehrend des laufenden Events
     const remaining = Math.max(0, leafEventEnd - Date.now());
     const seconds = Math.ceil(remaining / 1000);
     const minutes = Math.floor(seconds / 60);
     const rest = seconds % 60;
 
     document.getElementById("leafStatus").textContent =
-        `Blaetter-Event laeuft noch ${minutes}:${String(rest).padStart(2, "0")} | ${leavesSpawned}/50 Blaetter erschienen`;
+        `Blätter-Event läuft noch ${minutes}:${String(rest).padStart(2, "0")} | ${leavesSpawned}/50 Blätter erschienen`;
 
     if (remaining <= 0) {
         endLeafEvent();
@@ -714,6 +726,7 @@ function saveGame() {
         totalIQ,
         rebirths,
         leaves,
+        totalClicks,
         teachers: teachers.map(t => t.owned),
         upgrades: upgrades.map(u => u.owned),
         limitedUpgrades: limitedUpgrades.map(u => u.bought),
@@ -739,6 +752,7 @@ function loadGame() {
         totalIQ = data.totalIQ || 0;
         rebirths = data.rebirths || 0;
         leaves = data.leaves || 0;
+        totalClicks = data.totalClicks || 0;
         questionNumber = data.questionNumber || 0;
 
         if (Array.isArray(data.teachers)) {
@@ -780,6 +794,26 @@ document.getElementById("resetButton").addEventListener("click", () => {
 });
 
 // =============================
+// HAUPTSEITE UND SPIELSEITE
+// =============================
+
+const homePage = document.getElementById("homePage");
+const gamePage = document.getElementById("gamePage");
+
+document.getElementById("openClicker").addEventListener("click", () => {
+    homePage.classList.add("hidden");
+    gamePage.classList.remove("hidden");
+    window.scrollTo(0, 0);
+});
+
+document.getElementById("backHome").addEventListener("click", () => {
+    saveGame();
+    gamePage.classList.add("hidden");
+    homePage.classList.remove("hidden");
+    window.scrollTo(0, 0);
+});
+
+// =============================
 // SPIEL STARTEN
 // =============================
 
@@ -788,4 +822,3 @@ updateGame();
 
 setInterval(gameTick, 1000);
 setInterval(saveGame, 5000);
-``
