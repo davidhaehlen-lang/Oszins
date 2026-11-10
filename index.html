@@ -3,111 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSZINS CLICKER</title>
+    <title>OSZINS GAMES</title>
     <link rel="stylesheet" href="style.css">
     <script src="main.js" defer></script>
 </head>
 <body>
 
-<header>
-    <div class="logo">OSZ<span>INS</span></div>
-    <h1>OSZINS CLICKER</h1>
-    <p>Sammle IQ und werde zur Legende!</p>
-</header>
+<div id="homePage">
+    <header class="home-header">
+        <div class="logo">OSZ<span>INS</span></div>
+        <h1>OSZINS GAMES</h1>
+        <p>Alle meine Spiele an einem Ort.</p>
+    </header>
 
-<main>
-    <section class="stats">
-        <div class="stat"><span>🧠 IQ</span><strong id="iq">0</strong></div>
-        <div class="stat"><span>⚡ IQ pro Sekunde</span><strong id="perSecond">0</strong></div>
-        <div class="stat"><span>🖱️ IQ pro Klick</span><strong id="clickPower">1</strong></div>
-        <div class="stat"><span>♻️ Rebirths</span><strong id="rebirthCount">0</strong></div>
-        <div class="stat"><span>🍃 Blätter</span><strong id="leafCount">0</strong></div>
-    </section>
+    <main class="home-main">
+        <h2>Meine Spiele</h2>
 
-    <section class="card clicker">
-        <h2>Dein IQ-Klicker</h2>
-        <button id="clickButton" class="brain-button">🧠</button>
-        <p>Klicke auf das Gehirn, um IQ zu sammeln!</p>
-        <p id="multiplierText">Multiplikator: x1</p>
-    </section>
-
-    <section class="card event-card">
-        <h2>✨ Golden IQ</h2>
-        <p id="goldenStatus">Der goldene IQ ist noch nicht erschienen.</p>
-        <button id="goldenButton" class="golden-button hidden">
-            🌟 GOLDEN IQ ABHOLEN
+        <button class="game-tile" id="openClicker">
+            <span class="game-icon">🧠</span>
+            <span class="game-title">OSZINS CLICKER</span>
+            <span class="game-description">
+                Sammle IQ, kaufe Upgrades und werde immer stärker.
+            </span>
+            <span class="play-label">Spielen →</span>
         </button>
-        <p id="goldenTimer"></p>
-    </section>
 
-    <section class="card event-card">
-        <h2>👨‍🏫 Bossfight: Herr Ritter</h2>
-        <p id="bossStatus">Nächster Bossfight in 30:00</p>
-        <div id="bossGame" class="hidden">
-            <h3 id="bossQuestion"></h3>
-            <div id="bossAnswers" class="answers"></div>
-            <p id="bossProgress"></p>
-        </div>
-        <p id="bossResult"></p>
-    </section>
+        <p class="coming-soon">Weitere Spiele kommen bald!</p>
+    </main>
 
-    <section class="card leaf-card">
-        <h2>🍃 Blätter-Event</h2>
-        <p id="leafStatus">Nächstes Blätter-Event in 60:00</p>
-        <p id="leafInstructions">Während des Events fallen 50 Blätter herunter. Klicke sie an!</p>
-        <div id="leafArea"></div>
-    </section>
+    <footer>OSZINS GAMES</footer>
+</div>
 
-    <section class="card">
-        <h2>📝 Schultest</h2>
-        <p id="testTimer">Nächster Test in 60 Sekunden</p>
-        <div id="quiz" class="hidden">
-            <h3 id="question"></h3>
-            <div id="answers" class="answers"></div>
-            <p id="quizResult"></p>
-            <p id="questionTimer"></p>
-        </div>
-        <p id="difficulty"></p>
-    </section>
+<div id="gamePage" class="hidden">
 
-    <section class="card">
-        <h2>👨‍🏫 Lehrer-Shop</h2>
-        <div id="teacherShop" class="shop"></div>
-    </section>
+    <header class="game-header">
+        <button id="backHome" class="back-button">
+            ← Zurück zur Hauptseite
+        </button>
+        <div class="logo">OSZ<span>INS</span></div>
+        <h1>OSZINS CLICKER</h1>
+        <p>Sammle IQ und werde zur Legende!</p>
+    </header>
 
-    <section class="card">
-        <h2>🎒 Schulzeug-Upgrades</h2>
-        <div id="upgradeShop" class="shop"></div>
-    </section>
+    <main>
+        <section class="stats">
+            <div class="stat"><span>🧠 IQ</span><strong id="iq">0</strong></div>
+            <div class="stat"><span>⚡ IQ pro Sekunde</span><strong id="perSecond">0</strong></div>
+            <div class="stat"><span>🖱️ IQ pro Klick</span><strong id="clickPower">1</strong></div>
+            <div class="stat"><span>♻️ Rebirths</span><strong id="rebirthCount">0</strong></div>
+            <div class="stat"><span>🍃 Blätter</span><strong id="leafCount">0</strong></div>
+        </section>
 
-    <section class="card limited-card">
-        <h2>🍂 Limitierte Blatt-Upgrades</h2>
-        <p>Jedes Upgrade kann nur einmal gekauft werden.</p>
-        <div id="limitedShop" class="shop"></div>
-    </section>
+        <section class="card clicker">
+            <h2>Dein IQ-Klicker</h2>
+            <button id="clickButton" class="brain-button">🧠</button>
+            <p>Klicke auf das Gehirn, um IQ zu sammeln!</p>
+            <p id="multiplierText">Multiplikator: x1</p>
+        </section>
 
-    <section class="card">
-        <h2>♻️ Rebirth</h2>
-        <p>Beim Rebirth werden deine Lehrer und normalen Upgrades zurückgesetzt.</p>
-        <p>Dein Multiplikator wird verdoppelt.</p>
-        <p>Aktueller Bonus: <strong id="rebirthBonus">x1</strong></p>
-        <p>Kosten: <strong id="rebirthCost">1'000'000 IQ</strong></p>
-        <button id="rebirthButton">Rebirth durchführen</button>
-        <p id="rebirthMessage"></p>
-    </section>
+        <section class="card event-card">
+            <h2>✨ Golden IQ</h2>
+            <p id="goldenStatus">Der goldene IQ ist noch nicht erschienen.</p>
+            <button id="goldenButton" class="golden-button hidden">🌟 GOLDEN IQ ABHOLEN</button>
+            <p id="goldenTimer"></p>
+        </section>
 
-    <section class="card">
-        <h2>📊 Statistiken</h2>
-        <p>Gesamter IQ verdient: <strong id="totalIQ">0</strong></p>
-        <p>Lehrer insgesamt: <strong id="totalTeachers">0</strong></p>
-        <p>Normale Upgrades: <strong id="totalUpgrades">0</strong></p>
-        <button id="resetButton" class="reset-button">Spielstand zurücksetzen</button>
-    </section>
-</main>
+        <section class="card event-card">
+            <h2>👨‍🏫 Bossfight: Herr Ritter</h2>
+            <p id="bossStatus">Nächster Bossfight in 30:00</p>
+            <div id="bossGame" class="hidden">
+                <h3 id="bossQuestion"></h3>
+                <div id="bossAnswers" class="answers"></div>
+                <p id="bossProgress"></p>
+            </div>
+            <p id="bossResult"></p>
+        </section>
 
-<footer>
-    <p>OSZINS CLICKER – Version 4.0</p>
-</footer>
+        <section class="card leaf-card event-card">
+            <h2>🍃 Blätter-Event</h2>
+            <p id="leafStatus">Nächstes Blätter-Event in 60:00</p>
+            <p id="leafInstructions">Während des Events fallen 50 Blätter herunter. Klicke sie an!</p>
+            <div id="leafArea"></div>
+        </section>
+
+        <section class="card">
+            <h2>📝 Schultest</h2>
+            <p id="testTimer">Nächster Test in 60 Sekunden</p>
+            <div id="quiz" class="hidden">
+                <h3 id="question"></h3>
+                <div id="answers" class="answers"></div>
+                <p id="quizResult"></p>
+                <p id="questionTimer"></p>
+            </div>
+            <p id="difficulty"></p>
+        </section>
+
+        <section class="card">
+            <h2>👨‍🏫 Lehrer-Shop</h2>
+            <div id="teacherShop" class="shop"></div>
+        </section>
+
+        <section class="card">
+            <h2>🎒 Schulzeug-Upgrades</h2>
+            <div id="upgradeShop" class="shop"></div>
+        </section>
+
+        <section class="card limited-card">
+            <h2>🍂 Limitierte Blatt-Upgrades</h2>
+            <p>Jedes Upgrade kann nur einmal gekauft werden.</p>
+            <div id="limitedShop" class="shop"></div>
+        </section>
+
+        <section class="card">
+            <h2>♻️ Rebirth</h2>
+            <p>Beim Rebirth werden deine Lehrer und normalen Upgrades zurückgesetzt.</p>
+            <p>Dein Multiplikator wird verdoppelt.</p>
+            <p>Aktueller Bonus: <strong id="rebirthBonus">x1</strong></p>
+            <p>Kosten: <strong id="rebirthCost">1'000'000 IQ</strong></p>
+            <button id="rebirthButton">Rebirth durchführen</button>
+            <p id="rebirthMessage"></p>
+        </section>
+
+        <section class="card">
+            <h2>📊 Statistiken</h2>
+            <p>Gesamter IQ verdient: <strong id="totalIQ">0</strong></p>
+            <p>Lehrer insgesamt: <strong id="totalTeachers">0</strong></p>
+            <p>Normale Upgrades: <strong id="totalUpgrades">0</strong></p>
+            <p>Gesamte Klicks: <strong id="totalClicks">0</strong></p>
+            <button id="resetButton" class="reset-button">Spielstand zurücksetzen</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>OSZINS CLICKER – Version 5.0</p>
+    </footer>
+</div>
 
 </body>
 </html>
