@@ -1,5 +1,5 @@
 // =============================
-// OSZINS CLICKER VERSION 5.0
+// OSZINS CLICKER VERSION 4.0
 // =============================
 
 const SAVE_KEY = "oszinsSave";
@@ -191,11 +191,8 @@ function updateGame() {
         formatNumber(getRebirthCost()) + " IQ";
 
     document.getElementById("totalIQ").textContent = formatNumber(totalIQ);
-
     const clicksDisplay = document.getElementById("totalClicks");
-    if (clicksDisplay) {
-        clicksDisplay.textContent = formatNumber(totalClicks);
-    }
+    if (clicksDisplay) clicksDisplay.textContent = formatNumber(totalClicks);
 
     document.getElementById("totalTeachers").textContent =
         teachers.reduce((sum, item) => sum + item.owned, 0);
@@ -212,12 +209,8 @@ function updateGame() {
 
 document.getElementById("clickButton").addEventListener("click", () => {
     totalClicks++;
-
     const clickDisplay = document.getElementById("totalClicks");
-    if (clickDisplay) {
-        clickDisplay.textContent = formatNumber(totalClicks);
-    }
-
+    if (clickDisplay) clickDisplay.textContent = formatNumber(totalClicks);
     addIQ(clickPower * getGoldenMultiplier());
 });
 
@@ -566,6 +559,7 @@ function endLeafEvent() {
 }
 
 function updateLeafEvent() {
+    // Countdown waehrend das Event noch nicht laeuft
     if (!leafEventActive) {
         const remaining = Math.max(0, nextLeafTime - Date.now());
         const seconds = Math.ceil(remaining / 1000);
@@ -573,22 +567,22 @@ function updateLeafEvent() {
         const rest = seconds % 60;
 
         document.getElementById("leafStatus").textContent =
-            `Nächstes Blätter-Event in ${minutes}:${String(rest).padStart(2, "0")}`;
+            `Naechstes Blaetter-Event in ${minutes}:${String(rest).padStart(2, "0")}`;
 
         if (remaining <= 0) {
             startLeafEvent();
         }
-
         return;
     }
 
+    // Countdown waehrend des laufenden Events
     const remaining = Math.max(0, leafEventEnd - Date.now());
     const seconds = Math.ceil(remaining / 1000);
     const minutes = Math.floor(seconds / 60);
     const rest = seconds % 60;
 
     document.getElementById("leafStatus").textContent =
-        `Blätter-Event läuft noch ${minutes}:${String(rest).padStart(2, "0")} | ${leavesSpawned}/50 Blätter erschienen`;
+        `Blaetter-Event laeuft noch ${minutes}:${String(rest).padStart(2, "0")} | ${leavesSpawned}/50 Blaetter erschienen`;
 
     if (remaining <= 0) {
         endLeafEvent();
@@ -794,9 +788,10 @@ document.getElementById("resetButton").addEventListener("click", () => {
 });
 
 // =============================
-// HAUPTSEITE UND SPIELSEITE
+// SPIEL STARTEN
 // =============================
 
+// Hauptseite und Spielseite
 const homePage = document.getElementById("homePage");
 const gamePage = document.getElementById("gamePage");
 
@@ -813,12 +808,180 @@ document.getElementById("backHome").addEventListener("click", () => {
     window.scrollTo(0, 0);
 });
 
-// =============================
-// SPIEL STARTEN
-// =============================
-
 loadGame();
 updateGame();
 
 setInterval(gameTick, 1000);
 setInterval(saveGame, 5000);
+
+// =====================================================
+// OSZINS JUMP – eigener Bereich, Clicker-Code bleibt oben
+// =====================================================
+
+const jumpPage = document.getElementById("jumpPage");
+const jumpCanvas = document.getElementById("jumpCanvas");
+const jumpCtx = jumpCanvas.getContext("2d");
+let jumpLevel = 1;
+let jumpCoins = Number(localStorage.getItem("oszinsJumpCoins") || 0);
+let hasDoubleJump = localStorage.getItem("oszinsDoubleJump") === "true";
+let hasSpeed = localStorage.getItem("oszinsJumpSpeed") === "true";
+let jumpKeys = {};
+let jumpFrame = 0;
+let jumpRunning = false;
+let jumpLastTime = 0;
+let jumpPlatforms = [];
+let jumpHazards = [];
+let jumpCollectibles = [];
+let jumpGoal = { x: 850, y: 320, w: 28, h: 60 };
+const jumpPlayer = { x: 45, y: 300, w: 28, h: 38, vx: 0, vy: 0, grounded: false, airJumps: 0 };
+const jumpGravity = 0.55;
+
+function jumpBuildLevel() {
+    jumpPlayer.x = 45; jumpPlayer.y = 300; jumpPlayer.vx = 0; jumpPlayer.vy = 0;
+    jumpPlayer.grounded = false; jumpPlayer.airJumps = 0;
+    jumpPlatforms = [{x:0,y:380,w:900,h:40}];
+    jumpHazards = [];
+    jumpCollectibles = [];
+    const count = Math.min(3 + jumpLevel, 9);
+    for (let i = 0; i < count; i++) {
+        const x = 150 + i * (650 / count);
+        const y = 300 - (i % 3) * 65;
+        jumpPlatforms.push({x, y, w:100, h:14});
+        if (i % 2 === 0) jumpCollectibles.push({x:x+40,y:y-28,taken:false});
+        if (i > 1) jumpHazards.push({x:x+68,y:364,w:24,h:16});
+    }
+    jumpGoal = {x:850,y:310,w:25,h:70};
+    document.getElementById("jumpLevel").textContent = jumpLevel;
+    document.getElementById("jumpCoins").textContent = jumpCoins;
+    document.getElementById("jumpSkills").textContent =
+        [hasDoubleJump ? "Doppelsprung" : "", hasSpeed ? "Speed" : ""].filter(Boolean).join(", ") || "Keine";
+    document.getElementById("jumpMessage").textContent =
+        "Level " + jumpLevel + ": Erreiche die grüne Tür und weiche den roten Hindernissen aus.";
+}
+
+function jumpRectHit(a,b) {
+    return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
+}
+
+function jumpDraw() {
+    const g = jumpCtx.createLinearGradient(0,0,0,420);
+    g.addColorStop(0,"#171536"); g.addColorStop(1,"#101c35");
+    jumpCtx.fillStyle = g; jumpCtx.fillRect(0,0,900,420);
+    for(let i=0;i<35;i++){
+        const x=(i*97)%900, y=(i*53)%350;
+        jumpCtx.fillStyle="rgba(255,255,255,.55)";
+        jumpCtx.fillRect(x,y,2,2);
+    }
+    jumpPlatforms.forEach(p=>{
+        jumpCtx.fillStyle="#35e0c1"; jumpCtx.fillRect(p.x,p.y,p.w,p.h);
+        jumpCtx.fillStyle="#8affdf"; jumpCtx.fillRect(p.x,p.y,p.w,4);
+    });
+    jumpHazards.forEach(h=>{
+        jumpCtx.fillStyle="#ff527d";
+        jumpCtx.beginPath(); jumpCtx.moveTo(h.x,h.y+h.h); jumpCtx.lineTo(h.x+h.w/2,h.y); jumpCtx.lineTo(h.x+h.w,h.y+h.h); jumpCtx.fill();
+    });
+    jumpCollectibles.forEach(c=>{
+        if(c.taken) return;
+        jumpCtx.fillStyle="#ffd45c"; jumpCtx.beginPath(); jumpCtx.arc(c.x,c.y,9,0,Math.PI*2); jumpCtx.fill();
+        jumpCtx.strokeStyle="#fff1a6"; jumpCtx.stroke();
+    });
+    jumpCtx.fillStyle="#55ff9a"; jumpCtx.fillRect(jumpGoal.x,jumpGoal.y,jumpGoal.w,jumpGoal.h);
+    jumpCtx.fillStyle="#132b29"; jumpCtx.fillRect(jumpGoal.x+7,jumpGoal.y+12,5,5);
+    jumpCtx.fillStyle="#b9a2ff"; jumpCtx.fillRect(jumpPlayer.x,jumpPlayer.y,jumpPlayer.w,jumpPlayer.h);
+    jumpCtx.fillStyle="#fff"; jumpCtx.fillRect(jumpPlayer.x+17,jumpPlayer.y+8,5,5);
+}
+
+function jumpLoop(time) {
+    if(!jumpRunning) return;
+    const dt = Math.min((time-jumpLastTime)/16.67 || 1, 2);
+    jumpLastTime = time;
+    const speed = hasSpeed ? 4.8 : 3.6;
+    jumpPlayer.vx = 0;
+    if(jumpKeys.ArrowLeft || jumpKeys.a) jumpPlayer.vx = -speed;
+    if(jumpKeys.ArrowRight || jumpKeys.d) jumpPlayer.vx = speed;
+    jumpPlayer.x += jumpPlayer.vx * dt;
+    jumpPlayer.x = Math.max(0,Math.min(900-jumpPlayer.w,jumpPlayer.x));
+    const oldY = jumpPlayer.y;
+    jumpPlayer.vy += jumpGravity * dt;
+    jumpPlayer.y += jumpPlayer.vy * dt;
+    jumpPlayer.grounded = false;
+    if(jumpPlayer.vy >= 0){
+        for(const p of jumpPlatforms){
+            if(oldY+jumpPlayer.h <= p.y+4 && jumpPlayer.y+jumpPlayer.h >= p.y &&
+               jumpPlayer.x+jumpPlayer.w > p.x && jumpPlayer.x < p.x+p.w){
+                jumpPlayer.y = p.y-jumpPlayer.h; jumpPlayer.vy=0;
+                jumpPlayer.grounded=true; jumpPlayer.airJumps=0;
+            }
+        }
+    }
+    if(jumpPlayer.y > 450) jumpResetLevel("Du bist heruntergefallen. Versuch es nochmals!");
+    for(const h of jumpHazards) if(jumpRectHit(jumpPlayer,h)) jumpResetLevel("Hindernis getroffen! Level neu gestartet.");
+    for(const c of jumpCollectibles){
+        if(!c.taken && Math.hypot((jumpPlayer.x+14)-c.x,(jumpPlayer.y+18)-c.y)<22){
+            c.taken=true; jumpCoins++; localStorage.setItem("oszinsJumpCoins",jumpCoins);
+            document.getElementById("jumpCoins").textContent=jumpCoins;
+        }
+    }
+    if(jumpRectHit(jumpPlayer,jumpGoal)){
+        if(jumpLevel < 10){ jumpLevel++; jumpBuildLevel(); }
+        else { jumpLevel=1; jumpBuildLevel(); document.getElementById("jumpMessage").textContent="Gewonnen! Du hast alle 10 Level geschafft. Starte die nächste Runde!"; }
+    }
+    jumpDraw();
+    jumpFrame=requestAnimationFrame(jumpLoop);
+}
+
+function jumpResetLevel(message){
+    jumpBuildLevel();
+    document.getElementById("jumpMessage").textContent=message;
+}
+
+function jumpDoJump(){
+    if(jumpPlayer.grounded){
+        jumpPlayer.vy=-10.5; jumpPlayer.grounded=false;
+    } else if(hasDoubleJump && jumpPlayer.airJumps < 1){
+        jumpPlayer.vy=-9.5; jumpPlayer.airJumps++;
+    }
+}
+
+function jumpOpen(){
+    homePage.classList.add("hidden");
+    gamePage.classList.add("hidden");
+    jumpPage.classList.remove("hidden");
+    window.scrollTo(0,0);
+    if(!jumpRunning){ jumpRunning=true; jumpBuildLevel(); jumpLastTime=performance.now(); jumpFrame=requestAnimationFrame(jumpLoop); }
+}
+function jumpClose(){
+    jumpRunning=false; cancelAnimationFrame(jumpFrame);
+    jumpPage.classList.add("hidden"); homePage.classList.remove("hidden"); window.scrollTo(0,0);
+}
+document.getElementById("openJump").addEventListener("click",jumpOpen);
+document.getElementById("jumpBackHome").addEventListener("click",jumpClose);
+document.getElementById("jumpRestart").addEventListener("click",()=>jumpResetLevel("Level neu gestartet."));
+document.getElementById("buyDoubleJump").addEventListener("click",()=>{
+    if(hasDoubleJump){document.getElementById("jumpMessage").textContent="Doppelsprung bereits gekauft!";return;}
+    if(jumpCoins<35){document.getElementById("jumpMessage").textContent="Du brauchst 35 Münzen.";return;}
+    jumpCoins-=35; hasDoubleJump=true;
+    localStorage.setItem("oszinsJumpCoins",jumpCoins); localStorage.setItem("oszinsDoubleJump","true");
+    jumpBuildLevel();
+});
+document.getElementById("buySpeed").addEventListener("click",()=>{
+    if(hasSpeed){document.getElementById("jumpMessage").textContent="Speed-Boost bereits gekauft!";return;}
+    if(jumpCoins<50){document.getElementById("jumpMessage").textContent="Du brauchst 50 Münzen.";return;}
+    jumpCoins-=50; hasSpeed=true;
+    localStorage.setItem("oszinsJumpCoins",jumpCoins); localStorage.setItem("oszinsJumpSpeed","true");
+    jumpBuildLevel();
+});
+document.addEventListener("keydown",e=>{
+    if(["ArrowLeft","ArrowRight","ArrowUp"," "].includes(e.key)) e.preventDefault();
+    jumpKeys[e.key]=true;
+    if([" ","ArrowUp","w","W"].includes(e.key) && !jumpPage.classList.contains("hidden")) jumpDoJump();
+});
+document.addEventListener("keyup",e=>{jumpKeys[e.key]=false;});
+document.getElementById("jumpLeft").addEventListener("pointerdown",()=>jumpKeys.ArrowLeft=true);
+document.getElementById("jumpLeft").addEventListener("pointerup",()=>jumpKeys.ArrowLeft=false);
+document.getElementById("jumpLeft").addEventListener("pointerleave",()=>jumpKeys.ArrowLeft=false);
+document.getElementById("jumpRight").addEventListener("pointerdown",()=>jumpKeys.ArrowRight=true);
+document.getElementById("jumpRight").addEventListener("pointerup",()=>jumpKeys.ArrowRight=false);
+document.getElementById("jumpRight").addEventListener("pointerleave",()=>jumpKeys.ArrowRight=false);
+document.getElementById("jumpAction").addEventListener("click",jumpDoJump);
+jumpBuildLevel();
