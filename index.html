@@ -8,136 +8,146 @@
     <script src="main.js" defer></script>
 </head>
 <body>
-
 <div id="homePage">
     <header class="home-header">
         <div class="logo">OSZ<span>INS</span></div>
         <h1>OSZINS GAMES</h1>
         <p>Alle meine Spiele an einem Ort.</p>
     </header>
-
     <main class="home-main">
         <h2>Meine Spiele</h2>
-
         <button class="game-tile" id="openClicker">
             <span class="game-icon">🧠</span>
             <span class="game-title">OSZINS CLICKER</span>
-            <span class="game-description">
-                Sammle IQ, kaufe Upgrades und werde immer stärker.
-            </span>
+            <span class="game-description">Sammle IQ, kaufe Upgrades und werde immer stärker.</span>
             <span class="play-label">Spielen →</span>
         </button>
-
+        <button class="game-tile jump-tile" id="openJump">
+            <span class="game-icon">🕹️</span>
+            <span class="game-title">OSZINS JUMP</span>
+            <span class="game-description">Springe über Hindernisse, sammle Münzen und schaffe alle Level.</span>
+            <span class="play-label">Spielen →</span>
+        </button>
         <p class="coming-soon">Weitere Spiele kommen bald!</p>
     </main>
-
     <footer>OSZINS GAMES</footer>
 </div>
 
 <div id="gamePage" class="hidden">
-
-    <header class="game-header">
-        <button id="backHome" class="back-button">
-            ← Zurück zur Hauptseite
-        </button>
-        <div class="logo">OSZ<span>INS</span></div>
-        <h1>OSZINS CLICKER</h1>
-        <p>Sammle IQ und werde zur Legende!</p>
-    </header>
-
-    <main>
-        <section class="stats">
-            <div class="stat"><span>🧠 IQ</span><strong id="iq">0</strong></div>
-            <div class="stat"><span>⚡ IQ pro Sekunde</span><strong id="perSecond">0</strong></div>
-            <div class="stat"><span>🖱️ IQ pro Klick</span><strong id="clickPower">1</strong></div>
-            <div class="stat"><span>♻️ Rebirths</span><strong id="rebirthCount">0</strong></div>
-            <div class="stat"><span>🍃 Blätter</span><strong id="leafCount">0</strong></div>
-        </section>
-
-        <section class="card clicker">
-            <h2>Dein IQ-Klicker</h2>
-            <button id="clickButton" class="brain-button">🧠</button>
-            <p>Klicke auf das Gehirn, um IQ zu sammeln!</p>
-            <p id="multiplierText">Multiplikator: x1</p>
-        </section>
-
-        <section class="card event-card">
-            <h2>✨ Golden IQ</h2>
-            <p id="goldenStatus">Der goldene IQ ist noch nicht erschienen.</p>
-            <button id="goldenButton" class="golden-button hidden">🌟 GOLDEN IQ ABHOLEN</button>
-            <p id="goldenTimer"></p>
-        </section>
-
-        <section class="card event-card">
-            <h2>👨‍🏫 Bossfight: Herr Ritter</h2>
-            <p id="bossStatus">Nächster Bossfight in 30:00</p>
-            <div id="bossGame" class="hidden">
-                <h3 id="bossQuestion"></h3>
-                <div id="bossAnswers" class="answers"></div>
-                <p id="bossProgress"></p>
-            </div>
-            <p id="bossResult"></p>
-        </section>
-
-        <section class="card leaf-card event-card">
-            <h2>🍃 Blätter-Event</h2>
-            <p id="leafStatus">Nächstes Blätter-Event in 60:00</p>
-            <p id="leafInstructions">Während des Events fallen 50 Blätter herunter. Klicke sie an!</p>
-            <div id="leafArea"></div>
-        </section>
-
-        <section class="card">
-            <h2>📝 Schultest</h2>
-            <p id="testTimer">Nächster Test in 60 Sekunden</p>
-            <div id="quiz" class="hidden">
-                <h3 id="question"></h3>
-                <div id="answers" class="answers"></div>
-                <p id="quizResult"></p>
-                <p id="questionTimer"></p>
-            </div>
-            <p id="difficulty"></p>
-        </section>
-
-        <section class="card">
-            <h2>👨‍🏫 Lehrer-Shop</h2>
-            <div id="teacherShop" class="shop"></div>
-        </section>
-
-        <section class="card">
-            <h2>🎒 Schulzeug-Upgrades</h2>
-            <div id="upgradeShop" class="shop"></div>
-        </section>
-
-        <section class="card limited-card">
-            <h2>🍂 Limitierte Blatt-Upgrades</h2>
-            <p>Jedes Upgrade kann nur einmal gekauft werden.</p>
-            <div id="limitedShop" class="shop"></div>
-        </section>
-
-        <section class="card">
-            <h2>♻️ Rebirth</h2>
-            <p>Beim Rebirth werden deine Lehrer und normalen Upgrades zurückgesetzt.</p>
-            <p>Dein Multiplikator wird verdoppelt.</p>
-            <p>Aktueller Bonus: <strong id="rebirthBonus">x1</strong></p>
-            <p>Kosten: <strong id="rebirthCost">1'000'000 IQ</strong></p>
-            <button id="rebirthButton">Rebirth durchführen</button>
-            <p id="rebirthMessage"></p>
-        </section>
-
-        <section class="card">
-            <h2>📊 Statistiken</h2>
-            <p>Gesamter IQ verdient: <strong id="totalIQ">0</strong></p>
-            <p>Lehrer insgesamt: <strong id="totalTeachers">0</strong></p>
-            <p>Normale Upgrades: <strong id="totalUpgrades">0</strong></p>
-            <p>Gesamte Klicks: <strong id="totalClicks">0</strong></p>
-            <button id="resetButton" class="reset-button">Spielstand zurücksetzen</button>
-        </section>
-    </main>
-
-    <footer>
-        <p>OSZINS CLICKER – Version 5.0</p>
-    </footer>
+<header class="game-header">
+    <button id="backHome" class="back-button">← Zurück zur Hauptseite</button>
+    <div class="logo">OSZ<span>INS</span></div>
+    <h1>OSZINS CLICKER</h1>
+    <p>Sammle IQ und werde zur Legende!</p>
+</header>
+<main>
+    <section class="stats">
+        <div class="stat"><span>🧠 IQ</span><strong id="iq">0</strong></div>
+        <div class="stat"><span>⚡ IQ pro Sekunde</span><strong id="perSecond">0</strong></div>
+        <div class="stat"><span>🖱️ IQ pro Klick</span><strong id="clickPower">1</strong></div>
+        <div class="stat"><span>♻️ Rebirths</span><strong id="rebirthCount">0</strong></div>
+        <div class="stat"><span>🍃 Blätter</span><strong id="leafCount">0</strong></div>
+    </section>
+    <section class="card clicker">
+        <h2>Dein IQ-Klicker</h2>
+        <button id="clickButton" class="brain-button">🧠</button>
+        <p>Klicke auf das Gehirn, um IQ zu sammeln!</p>
+        <p id="multiplierText">Multiplikator: x1</p>
+    </section>
+    <section class="card event-card">
+        <h2>✨ Golden IQ</h2>
+        <p id="goldenStatus">Der goldene IQ ist noch nicht erschienen.</p>
+        <button id="goldenButton" class="golden-button hidden">🌟 GOLDEN IQ ABHOLEN</button>
+        <p id="goldenTimer"></p>
+    </section>
+    <section class="card event-card">
+        <h2>👨‍🏫 Bossfight: Herr Ritter</h2>
+        <p id="bossStatus">Nächster Bossfight in 30:00</p>
+        <div id="bossGame" class="hidden"><h3 id="bossQuestion"></h3><div id="bossAnswers" class="answers"></div><p id="bossProgress"></p></div>
+        <p id="bossResult"></p>
+    </section>
+    <section class="card leaf-card event-card">
+        <h2>🍃 Blätter-Event</h2>
+        <p id="leafStatus">Nächstes Blätter-Event in 60:00</p>
+        <p id="leafInstructions">Während des Events fallen 50 Blätter herunter. Klicke sie an!</p>
+        <div id="leafArea"></div>
+    </section>
+    <section class="card">
+        <h2>📝 Schultest</h2>
+        <p id="testTimer">Nächster Test in 60 Sekunden</p>
+        <div id="quiz" class="hidden"><h3 id="question"></h3><div id="answers" class="answers"></div><p id="quizResult"></p><p id="questionTimer"></p></div>
+        <p id="difficulty"></p>
+    </section>
+    <section class="card"><h2>👨‍🏫 Lehrer-Shop</h2><div id="teacherShop" class="shop"></div></section>
+    <section class="card"><h2>🎒 Schulzeug-Upgrades</h2><div id="upgradeShop" class="shop"></div></section>
+    <section class="card limited-card"><h2>🍂 Limitierte Blatt-Upgrades</h2><p>Jedes Upgrade kann nur einmal gekauft werden.</p><div id="limitedShop" class="shop"></div></section>
+    <section class="card">
+        <h2>🏆 Online-Leaderboard</h2>
+        <p>Wähle einen Spielernamen. Verwende am besten einen Nickname und keine persönlichen Daten.</p>
+        <div class="player-entry"><input id="playerName" type="text" maxlength="18" placeholder="Dein Spielername"><button id="savePlayerName">Name speichern</button></div>
+        <p id="leaderboardMessage">Die Online-Rangliste muss zuerst mit Supabase eingerichtet werden.</p>
+        <div class="leaderboard-grid">
+            <div class="shop-item"><h3>🧠 Meiste IQ</h3><ol id="iqLeaderboard"><li>Noch keine Einträge.</li></ol></div>
+            <div class="shop-item"><h3>🖱️ Meiste Klicks</h3><ol id="clickLeaderboard"><li>Noch keine Einträge.</li></ol></div>
+        </div>
+    </section>
+    <section class="card">
+        <h2>♻️ Rebirth</h2>
+        <p>Beim Rebirth werden deine Lehrer und normalen Upgrades zurückgesetzt.</p><p>Dein Multiplikator wird verdoppelt.</p>
+        <p>Aktueller Bonus: <strong id="rebirthBonus">x1</strong></p><p>Kosten: <strong id="rebirthCost">1'000'000 IQ</strong></p>
+        <button id="rebirthButton">Rebirth durchführen</button><p id="rebirthMessage"></p>
+    </section>
+    <section class="card">
+        <h2>📊 Statistiken</h2><p>Gesamter IQ verdient: <strong id="totalIQ">0</strong></p>
+        <p>Lehrer insgesamt: <strong id="totalTeachers">0</strong></p><p>Normale Upgrades: <strong id="totalUpgrades">0</strong></p>
+        <p>Gesamte Klicks: <strong id="totalClicks">0</strong></p>
+        <button id="resetButton" class="reset-button">Spielstand zurücksetzen</button>
+    </section>
+</main>
+<footer><p>OSZINS CLICKER – Version 5.0</p></footer>
 </div>
 
+<div id="jumpPage" class="hidden">
+    <header class="game-header jump-header">
+        <button id="jumpBackHome" class="back-button">← Zurück zur Hauptseite</button>
+        <div class="logo">OSZ<span>INS</span></div>
+        <h1>OSZINS JUMP</h1>
+        <p>Springe, sammle Münzen und erreiche das Ziel!</p>
+    </header>
+    <main class="jump-main">
+        <section class="card jump-panel">
+            <div class="jump-hud">
+                <span>Level: <strong id="jumpLevel">1</strong>/10</span>
+                <span>Münzen: <strong id="jumpCoins">0</strong></span>
+                <span>Fähigkeiten: <strong id="jumpSkills">Keine</strong></span>
+            </div>
+            <canvas id="jumpCanvas" width="900" height="420"></canvas>
+            <p id="jumpMessage">Bewege dich mit A/D oder ←/→. Springe mit W, ↑ oder Leertaste.</p>
+            <div class="jump-controls">
+                <button id="jumpLeft">◀</button>
+                <button id="jumpAction">SPRINGEN</button>
+                <button id="jumpRight">▶</button>
+                <button id="jumpRestart">Level neu starten</button>
+            </div>
+        </section>
+        <section class="card">
+            <h2>🛒 Jump-Shop</h2>
+            <p>Kaufe Fähigkeiten mit deinen gesammelten Münzen. Der Doppelsprung lässt dich ein zweites Mal in der Luft springen.</p>
+            <div class="shop">
+                <div class="shop-item">
+                    <h3>🪽 Doppelsprung</h3>
+                    <p>Du kannst einmal extra in der Luft springen.</p>
+                    <button id="buyDoubleJump">Kaufen – 35 Münzen</button>
+                </div>
+                <div class="shop-item">
+                    <h3>⚡ Speed-Boost</h3>
+                    <p>Du läufst etwas schneller.</p>
+                    <button id="buySpeed">Kaufen – 50 Münzen</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>OSZINS JUMP</footer>
+</div>
 </body>
 </html>
