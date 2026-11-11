@@ -1,349 +1,51 @@
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #101426;
-    color: white;
-}
-
-header {
-    text-align: center;
-    padding: 30px 15px;
-    background: #1b2340;
-    border-bottom: 3px solid #e5b93f;
-}
-
-header h1 {
-    margin: 10px 0;
-}
-
-.logo {
-    font-size: 32px;
-    font-weight: bold;
-    color: #e5b93f;
-}
-
-.logo span {
-    color: white;
-}
-
-main {
-    max-width: 1100px;
-    margin: auto;
-    padding: 20px;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.stat {
-    background: #202a49;
-    border: 1px solid #39476d;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-}
-
-.stat span {
-    display: block;
-    color: #c7d0e8;
-    margin-bottom: 8px;
-}
-
-.stat strong {
-    font-size: 21px;
-    color: #f4ca58;
-    overflow-wrap: anywhere;
-}
-
-.card {
-    background: #1b2340;
-    border: 1px solid #39476d;
-    border-radius: 15px;
-    padding: 22px;
-    margin-bottom: 20px;
-}
-
-.card h2 {
-    color: #f4ca58;
-    margin-top: 0;
-}
-
-.clicker,
-.event-card {
-    text-align: center;
-}
-
-.brain-button {
-    font-size: 85px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.1s;
-}
-
-.brain-button:hover {
-    transform: scale(1.12);
-}
-
-.brain-button:active {
-    transform: scale(0.9);
-}
-
-button {
-    background: #e5b93f;
-    color: #171717;
-    border: none;
-    border-radius: 9px;
-    padding: 12px 17px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 5px;
-}
-
-button:hover {
-    filter: brightness(1.12);
-}
-
-button:disabled {
-    background: #697084;
-    color: #d0d0d0;
-    cursor: not-allowed;
-}
-
-.golden-button {
-    background: linear-gradient(135deg, #fff0a6, #e5a900);
-    color: #4c3100;
-    font-size: 18px;
-    padding: 17px 25px;
-    animation: goldPulse 1s infinite alternate;
-}
-
-@keyframes goldPulse {
-    from {
-        box-shadow: 0 0 5px #e5b93f;
-    }
-    to {
-        box-shadow: 0 0 25px #ffe36a;
-    }
-}
-
-.leaf-card {
-    overflow: hidden;
-}
-
-#leafArea {
-    position: relative;
-    height: 280px;
-    overflow: hidden;
-    background: #101a29;
-    border: 2px dashed #72945d;
-    border-radius: 12px;
-    margin-top: 15px;
-}
-
-.falling-leaf {
-    position: absolute;
-    top: -45px;
-    font-size: 32px;
-    padding: 5px;
-    background: transparent;
-    animation: leafFall linear forwards;
-    z-index: 2;
-}
-
-@keyframes leafFall {
-    from {
-        transform: translateY(0) rotate(0deg);
-    }
-    to {
-        transform: translateY(330px) rotate(360deg);
-    }
-}
-
-.shop {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-}
-
-.shop-item {
-    background: #263252;
-    border: 1px solid #46577f;
-    padding: 14px;
-    border-radius: 10px;
-}
-
-.shop-item h3 {
-    margin-top: 0;
-    color: #f4ca58;
-}
-
-.shop-item p {
-    margin: 7px 0;
-}
-
-.limited-card {
-    border: 2px solid #799e55;
-}
-
-.limited-card h2 {
-    color: #a9d77d;
-}
-
-.limited-card .shop-item {
-    border-color: #799e55;
-}
-
-.answers {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.answers button {
-    width: 100%;
-    margin: 0;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.reset-button {
-    background: #a94444;
-    color: white;
-}
-
-footer {
-    text-align: center;
-    padding: 20px;
-    color: #9da8c6;
-}
-
-/* Hauptseite mit Spielauswahl */
-
-#homePage {
-    min-height: 100vh;
-}
-
-.home-header {
-    padding: 55px 15px;
-}
-
-.home-header h1 {
-    font-size: clamp(32px, 6vw, 54px);
-    letter-spacing: 2px;
-}
-
-.home-main {
-    max-width: 1000px;
-    min-height: 55vh;
-}
-
-.home-main > h2 {
-    color: #f4ca58;
-    font-size: 28px;
-    margin: 12px 0 22px;
-}
-
-.game-tile {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    width: min(100%, 360px);
-    min-height: 230px;
-    padding: 24px;
-    margin: 0;
-    background: linear-gradient(145deg, #26365d, #1b2340);
-    color: white;
-    border: 2px solid #e5b93f;
-    border-radius: 18px;
-    box-shadow: 0 12px 30px #0005;
-    transition: transform .18s, box-shadow .18s;
-}
-
-.game-tile:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 35px #0008;
-}
-
-.game-icon {
-    font-size: 48px;
-    margin-bottom: 12px;
-}
-
-.game-title {
-    color: #f4ca58;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.game-description {
-    color: #d5dcef;
-    line-height: 1.5;
-    margin-top: 10px;
-    font-weight: normal;
-}
-
-.play-label {
-    margin-top: auto;
-    padding-top: 18px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.coming-soon {
-    color: #9da8c6;
-    margin-top: 28px;
-}
-
-.game-header {
-    position: relative;
-}
-
-.back-button {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: #303d60;
-    color: white;
-    border: 1px solid #63749e;
-}
-
-@media (max-width: 600px) {
-    main {
-        padding: 12px;
-    }
-
-    .card {
-        padding: 16px;
-    }
-
-    .brain-button {
-        font-size: 70px;
-    }
-
-    .home-header {
-        padding: 38px 12px;
-    }
-
-    .back-button {
-        position: static;
-        margin-bottom: 12px;
-    }
-
-    .game-tile {
-        width: 100%;
-    }
-}
+*{box-sizing:border-box}
+:root{--bg:#090b18;--panel:#14182d;--panel2:#1b2140;--purple:#9b75ff;--cyan:#42e8d0;--pink:#ff5caa;--text:#f4f3ff;--muted:#b7bdd8}
+body{margin:0;font-family:Arial,sans-serif;background:radial-gradient(circle at 20% 0%,#24204b 0,#0b0d1d 42%,#080a14 100%);color:var(--text);min-height:100vh}
+.hidden{display:none!important}
+header{text-align:center;padding:30px 15px;background:linear-gradient(135deg,#171532,#20234a);border-bottom:1px solid #6651a8;box-shadow:0 8px 35px #0008}
+header h1{margin:8px 0;font-size:clamp(27px,5vw,42px);letter-spacing:2px}
+header p{color:var(--muted)}
+.logo{font-size:30px;font-weight:900;color:var(--cyan);letter-spacing:4px;text-shadow:0 0 18px #42e8d088}
+.logo span{color:#fff}
+main{max-width:1100px;margin:auto;padding:22px}
+.home-main{max-width:950px;text-align:center}
+.home-main h2{font-size:28px}
+.game-tile{display:inline-flex;vertical-align:top;flex-direction:column;align-items:flex-start;text-align:left;width:min(100%,390px);min-height:235px;margin:12px;padding:25px;background:linear-gradient(145deg,#1b2142,#11162b);border:1px solid #6555a6;border-radius:20px;color:var(--text);box-shadow:0 12px 30px #0005;transition:.2s}
+.game-tile:hover{transform:translateY(-6px);border-color:var(--cyan);box-shadow:0 0 25px #42e8d044}
+.game-icon{font-size:42px}.game-title{font-size:22px;font-weight:900;margin:12px 0;color:var(--cyan)}
+.game-description{color:var(--muted);line-height:1.5}.play-label{margin-top:auto;padding-top:18px;color:#c2aaff;font-weight:bold}
+.coming-soon,footer{color:var(--muted);text-align:center;padding:20px}
+.game-header{position:relative}
+.back-button{position:absolute;left:18px;top:18px;background:#2b3157;color:white;border:1px solid #6d67a8}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:linear-gradient(145deg,#202747,#151a31);border:1px solid #444d7a;border-radius:14px;padding:15px;text-align:center;box-shadow:0 5px 18px #0003}
+.stat span{display:block;color:var(--muted);margin-bottom:8px}.stat strong{font-size:21px;color:var(--cyan);overflow-wrap:anywhere}
+.card{background:linear-gradient(145deg,#171d37,#11162a);border:1px solid #3b456e;border-radius:17px;padding:22px;margin-bottom:18px;box-shadow:0 8px 24px #0003}
+.card h2{color:#c2aaff;margin-top:0}
+.clicker,.event-card{text-align:center}
+.brain-button{font-size:85px;background:transparent;border:0;cursor:pointer;transition:transform .1s}
+.brain-button:hover{transform:scale(1.12)}.brain-button:active{transform:scale(.9)}
+button{background:linear-gradient(135deg,#9b75ff,#7254d9);color:white;border:1px solid #b9a4ff;border-radius:10px;padding:11px 16px;font-size:15px;font-weight:bold;cursor:pointer;margin:5px;transition:.15s}
+button:hover{filter:brightness(1.15);transform:translateY(-1px)}
+button:disabled{background:#555b70;color:#c8c8d0;cursor:not-allowed}
+.golden-button{background:linear-gradient(135deg,#fff0a6,#e5a900);color:#4c3100;font-size:18px;padding:17px 25px;animation:goldPulse 1s infinite alternate}
+@keyframes goldPulse{from{box-shadow:0 0 5px #e5b93f}to{box-shadow:0 0 25px #ffe36a}}
+#leafArea{position:relative;height:280px;overflow:hidden;background:#101a29;border:2px dashed #42e8d0;border-radius:12px;margin-top:15px}
+.falling-leaf{position:absolute;top:-45px;font-size:32px;padding:5px;background:transparent;animation:leafFall linear forwards;z-index:2}
+@keyframes leafFall{from{transform:translateY(0) rotate(0)}to{transform:translateY(330px) rotate(360deg)}}
+.shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.shop-item{background:#202747;border:1px solid #46517f;padding:14px;border-radius:12px}
+.shop-item h3{margin-top:0;color:var(--cyan)}.shop-item p{margin:7px 0;color:var(--muted)}
+.answers button{display:block;width:min(100%,500px);margin:8px auto}
+input{background:#0d1225;border:1px solid #626b9a;border-radius:8px;padding:12px;color:white}
+.leaderboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.reset-button{background:#a63864;border-color:#e16c9b}
+.jump-main{max-width:1000px}
+.jump-panel{border-color:#6355a5}
+.jump-hud{display:flex;justify-content:space-around;gap:10px;flex-wrap:wrap;margin-bottom:15px;color:var(--muted)}
+.jump-hud strong{color:var(--cyan)}
+#jumpCanvas{display:block;width:100%;height:auto;border:1px solid #7666bc;border-radius:13px;background:#11152c;box-shadow:0 0 25px #9875ff22}
+#jumpMessage{text-align:center;color:#d7d0ff;min-height:24px}
+.jump-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+.jump-controls button{min-width:65px}
+@media(max-width:650px){.back-button{position:static;margin-bottom:12px}.game-header{padding-top:18px}.game-tile{margin:8px 0}.jump-controls button{padding:13px 15px}}
